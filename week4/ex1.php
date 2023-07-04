@@ -75,7 +75,7 @@ function chineseZodiac($year)
     <form action="ex1.php" method="get">
         First Name:<input type="text" name="firstName"><br>
         Last Name:<input type="text" name="lastName"><br>
-
+        Date of Birth:
         <select name="d">
             <?php
             for ($d = 1; $d <= 31; $d++) {
@@ -99,7 +99,7 @@ function chineseZodiac($year)
             }
             ?>
         </select>
-
+        <br>
         <input type="submit">
     </form>
 
