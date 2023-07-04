@@ -1,6 +1,37 @@
+<?php
+function checkError($firstName, $lastName, $m, $d, $y, $username, $password, $confirmPassword, $email)
+{
+    if (empty($firstName) || empty($lastName)) {
+        echo "<span class='error'>Please fill in your name.</span>";
+
+    } else if (!checkdate($m, $d, $y)) {
+        echo "<span class='error'>Invalid date of birth.</span>";
+
+    } else if (strlen($username) < 6 || !preg_match('/^[a-zA-Z][a-zA-Z0-9_-]{5,}$/', $username)) {
+        echo "<span class='error'>Username must be minimum 6 characters, the first character cannot be number, and only _ or - is allowed in between.</span>";
+
+    } else if (strlen($password) < 8 || !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9]{8,}$/', $password)) {
+        echo "<span class='error'>Password must be minimum 8 characters, at least 1 capital letter, 1 small letter, 1 number, and NO symbols like +$()% (@#)  allowed.</span>";
+
+    } else if ($password !== $confirmPassword) {
+        echo "<span class='error'>Passwords do not match.</span>";
+
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "<span class='error'>Invalid email format.</span>";
+    } else {
+        echo "Your registration is done.";
+    }
+}
+?>
+
 <html>
 <header>
     <style>
+        form input,
+        form select {
+            margin: 5px;
+        }
+
         .error {
             color: red;
         }
@@ -8,7 +39,7 @@
 </header>
 
 <body>
-
+    <h1>Registration Form</h1>
     <form action="ex2.php" method="post">
         First Name:
         <input type="text" name="firstName">
@@ -86,24 +117,7 @@
         $confirmPassword = $_POST['confirmPassword'];
         $email = $_POST['email'];
 
-        if (empty($firstName) || empty($lastName)) {
-            echo "Please fill in your name.";
-
-        } else if (!checkdate($m, $d, $y)) {
-            echo "<span class='error'>Invalid date of birth.</span>";
-
-        } else if (strlen($username) < 6 || !preg_match('/^[a-zA-Z][a-zA-Z0-9_-]{5,}$/', $username)) {
-            echo "<span class='error'>Username must be minimum 6 characters, the first character cannot be number, and only _ or - is allowed in between.</span>";
-
-        } else if (strlen($password) < 8 || !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9]{8,}$/', $password)) {
-            echo "<span class='error'>Password must be minimum 8 characters, at least 1 capital letter, 1 small letter, 1 number, and NO symbols like +$()% (@#)  allowed.</span>";
-
-        } else if ($password !== $confirmPassword) {
-            echo "<span class='error'>Passwords do not match.</span>";
-
-        } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo "<span class='error'>Invalid email format.</span>";
-        }
+        echo checkError($firstName, $lastName, $m, $d, $y, $username, $password, $confirmPassword, $email);
     }
     ?>
 

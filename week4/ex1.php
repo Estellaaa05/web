@@ -64,6 +64,11 @@ function chineseZodiac($year)
 
 <head>
     <style>
+        form input,
+        form select {
+            margin: 5px;
+        }
+
         .error {
             color: #FF0000;
         }
