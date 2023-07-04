@@ -10,8 +10,6 @@
 
 <body>
 
-    <body>
-
         <form action="decForm.php" method="get">
             Number:<input type="text" name="number"><br>
             <input type="submit">

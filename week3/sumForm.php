@@ -10,8 +10,6 @@
 
 <body>
 
-    <body>
-
         <form action="sumForm.php" method="get">
             First Name:<input type="text" name="firstName"><br>
             Last Name:<input type="text" name="lastName"><br>
