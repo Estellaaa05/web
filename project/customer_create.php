@@ -57,7 +57,7 @@
                     $flag = false;
                 }
 
-                if (empty($password)) {
+                if (empty($_POST['password'])) {
                     echo "<div class='alert alert-danger'>Please fill in your password.</div>";
                     $flag = false;
                 }
@@ -65,9 +65,7 @@
                 if (empty($confirm_password)) {
                     echo "<div class='alert alert-danger'>Please fill in confirm password.</div>";
                     $flag = false;
-                }
-
-                if ($_POST['password'] !== $confirm_password) {
+                } else if ($_POST['password'] !== $confirm_password) {
                     echo "<div class='alert alert-danger'>Passwords do not match.</div>";
                     $flag = false;
                 }
@@ -102,6 +100,8 @@
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
                     }
+                } else {
+                    echo "<div class='alert alert-danger'>Unable to save record.</div>";
                 }
             }
 
