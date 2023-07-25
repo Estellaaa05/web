@@ -31,12 +31,13 @@
                 $stmt = $con->prepare($query); //con connect database
                 // posted values
                 $username = strip_tags($_POST['username']);
-                $password = strip_tags($_POST['password']);
+                $password = md5($_POST['password']);
+                $confirm_password = $_POST['confirm_password'];
                 $first_name = strip_tags(ucwords(strtolower($_POST['first_name'])));
                 $last_name = strip_tags(ucwords(strtolower($_POST['last_name'])));
-                $gender = isset($_POST['gender']) ? strip_tags($_POST['gender']) : '';
-                $date_of_birth = strip_tags($_POST['date_of_birth']);
-                $account_status = isset($_POST['account_status']) ? strip_tags($_POST['account_status']) : '';
+                $gender = isset($_POST['gender']) ? $_POST['gender'] : '';
+                $date_of_birth = $_POST['date_of_birth'];
+                $account_status = isset($_POST['account_status']) ? $_POST['account_status'] : '';
                 // bind the parameters
                 $stmt->bindParam(':username', $username); //bindParam = put $name into :name
                 $stmt->bindParam(':password', $password);
@@ -58,6 +59,16 @@
 
                 if (empty($password)) {
                     echo "<div class='alert alert-danger'>Please fill in your password.</div>";
+                    $flag = false;
+                }
+
+                if (empty($confirm_password)) {
+                    echo "<div class='alert alert-danger'>Please fill in confirm password.</div>";
+                    $flag = false;
+                }
+
+                if ($_POST['password'] !== $confirm_password) {
+                    echo "<div class='alert alert-danger'>Passwords do not match.</div>";
                     $flag = false;
                 }
 
@@ -87,7 +98,7 @@
                 }
 
 
-                if ($flag = true) {
+                if ($flag == true) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
                     }
@@ -111,6 +122,10 @@
                 <tr>
                     <td>Password</td>
                     <td><input type='password' name='password' class='form-control'></textarea></td>
+                </tr>
+                <tr>
+                    <td>Confirm Password</td>
+                    <td><input type='password' name='confirm_password' class='form-control'></textarea></td>
                 </tr>
                 <tr>
                     <td>First Name</td>

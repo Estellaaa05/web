@@ -34,8 +34,8 @@
                 $description = strip_tags($_POST['description']);
                 $price = strip_tags($_POST['price']);
                 $promotion_price = strip_tags($_POST['promotion_price']);
-                $manufacture_date = strip_tags($_POST['manufacture_date']);
-                $expired_date = strip_tags($_POST['expired_date']);
+                $manufacture_date = $_POST['manufacture_date'];
+                $expired_date = $_POST['expired_date'];
                 // bind the parameters
                 $stmt->bindParam(':name', $name); //bindParam = 把$name放进:name里面
                 $stmt->bindParam(':description', $description);
