@@ -31,7 +31,7 @@
                 $stmt = $con->prepare($query); //con connect database
                 // posted values
                 $username = strip_tags($_POST['username']);
-                $password = md5($_POST['password']);
+                $password = strip_tags($_POST['password']);
                 $confirm_password = $_POST['confirm_password'];
                 $first_name = strip_tags(ucwords(strtolower($_POST['first_name'])));
                 $last_name = strip_tags(ucwords(strtolower($_POST['last_name'])));
@@ -39,6 +39,8 @@
                 $date_of_birth = $_POST['date_of_birth'];
                 $account_status = isset($_POST['account_status']) ? $_POST['account_status'] : '';
                 // bind the parameters
+        
+                $password = md5($password);
                 $stmt->bindParam(':username', $username); //bindParam = put $name into :name
                 $stmt->bindParam(':password', $password);
                 $stmt->bindParam(':first_name', $first_name);
@@ -57,7 +59,7 @@
                     $flag = false;
                 }
 
-                if (empty($_POST['password'])) {
+                if (empty($password)) {
                     echo "<div class='alert alert-danger'>Please fill in your password.</div>";
                     $flag = false;
                 }
@@ -100,8 +102,6 @@
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
                     }
-                } else {
-                    echo "<div class='alert alert-danger'>Unable to save record.</div>";
                 }
             }
 
