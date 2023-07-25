@@ -30,12 +30,12 @@
                 // prepare query for execution
                 $stmt = $con->prepare($query); //con是连接database的钥匙
                 // posted values
-                $name = htmlspecialchars(strip_tags($_POST['name']));
-                $description = htmlspecialchars(strip_tags($_POST['description']));
-                $price = htmlspecialchars(strip_tags($_POST['price']));
-                $promotion_price = htmlspecialchars(strip_tags($_POST['promotion_price']));
-                $manufacture_date = htmlspecialchars(strip_tags($_POST['manufacture_date']));
-                $expired_date = htmlspecialchars(strip_tags($_POST['expired_date']));
+                $name = strip_tags($_POST['name']);
+                $description = strip_tags($_POST['description']);
+                $price = strip_tags($_POST['price']);
+                $promotion_price = strip_tags($_POST['promotion_price']);
+                $manufacture_date = strip_tags($_POST['manufacture_date']);
+                $expired_date = strip_tags($_POST['expired_date']);
                 // bind the parameters
                 $stmt->bindParam(':name', $name); //bindParam = 把$name放进:name里面
                 $stmt->bindParam(':description', $description);
@@ -47,13 +47,53 @@
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
                 // 前面都是在准备 最后在这里Execute the query
-                if (empty($name) || empty($description) || empty($price) || empty($promotion_price) || empty($manufacture_date) || empty($expired_date)) {
-                    echo "<div class='alert alert-danger'>Unable to save record.</div>";
-                } else if ($price < $promotion_price) {
+                $flag = true;
+                if (empty($name)) {
+                    echo "<div class='alert alert-danger'>Please fill in your name.</div>";
+                    $flag = false;
+                }
+
+                if (empty($description)) {
+                    echo "<div class='alert alert-danger'>Please fill in the description.</div>";
+                    $flag = false;
+                }
+
+                if (empty($price)) {
+                    echo "<div class='alert alert-danger'>Please fill in the price.</div>";
+                    $flag = false;
+                }
+
+                if (empty($promotion_price)) {
+                    echo "<div class='alert alert-danger'>Please fill in the promotion price.</div>";
+                    $flag = false;
+                }
+
+                if (!is_numeric($price) || !is_numeric($promotion_price)) {
+                    echo "<div class='alert alert-danger'>Please fill in the price using number.</div>";
+                    $flag = false;
+                }
+
+                if ($price < $promotion_price) {
                     echo "<div class='alert alert-danger'>Promotion price must be cheaper than original price.</div>";
-                } else if (strtotime($expired_date) < strtotime($manufacture_date)) {
+                    $flag = false;
+                }
+
+                if (empty($manufacture_date) || empty($expired_date)) {
+                    echo "<div class='alert alert-danger'>Please select the manucfacture date.</div>";
+                    $flag = false;
+                }
+
+                if (empty($expired_date)) {
+                    echo "<div class='alert alert-danger'>Please select the expired date.</div>";
+                    $flag = false;
+                }
+
+                if (strtotime($expired_date) < strtotime($manufacture_date)) {
                     echo "<div class='alert alert-danger'>Expired date must be later than manufacture date.</div>";
-                } else if ($stmt->execute()) {
+                    $flag = false;
+                }
+
+                if ($flag = true && $stmt->execute()) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                 }
             }

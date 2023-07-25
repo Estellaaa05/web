@@ -30,12 +30,13 @@
                 // prepare query for execution
                 $stmt = $con->prepare($query); //con connect database
                 // posted values
-                $username = htmlspecialchars(strip_tags($_POST['username']));
-                $password = htmlspecialchars(strip_tags($_POST['password']));
-                $first_name = htmlspecialchars(strip_tags(ucwords(strtolower($_POST['first_name']))));
-                $last_name = htmlspecialchars(strip_tags(ucwords(strtolower($_POST['last_name']))));
-                $gender = isset($_POST['gender']) ? htmlspecialchars(strip_tags($_POST['gender'])) : '';
-                $date_of_birth = htmlspecialchars(strip_tags($_POST['date_of_birth']));
+                $username = strip_tags($_POST['username']);
+                $password = strip_tags($_POST['password']);
+                $first_name = strip_tags(ucwords(strtolower($_POST['first_name'])));
+                $last_name = strip_tags(ucwords(strtolower($_POST['last_name'])));
+                $gender = isset($_POST['gender']) ? strip_tags($_POST['gender']) : '';
+                $date_of_birth = strip_tags($_POST['date_of_birth']);
+                $account_status = isset($_POST['account_status']) ? strip_tags($_POST['account_status']) : '';
                 // bind the parameters
                 $stmt->bindParam(':username', $username); //bindParam = put $name into :name
                 $stmt->bindParam(':password', $password);
@@ -43,16 +44,50 @@
                 $stmt->bindParam(':last_name', $last_name);
                 $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':date_of_birth', $date_of_birth);
+                $stmt->bindParam(':account_status', $account_status);
                 // specify when this record was inserted to the database
                 $registration_date_time = date('Y-m-d H:i:s');
                 $stmt->bindParam(':registration_date_time', $registration_date_time);
-                $account_status = 'active';
-                $stmt->bindParam(':account_status', $account_status);
 
                 // Execute the query
-                if (empty($username) || empty($password) || empty($first_name) || empty($last_name) || empty($gender) || empty($date_of_birth)) {
-                    echo "<div class='alert alert-danger'>Unable to save record.</div>";
-                } else if ($stmt->execute()) {
+                $flag = true;
+                if (empty($username)) {
+                    echo "<div class='alert alert-danger'>Please fill in your username.</div>";
+                    $flag = false;
+                }
+
+                if (empty($password)) {
+                    echo "<div class='alert alert-danger'>Please fill in your password.</div>";
+                    $flag = false;
+                }
+
+                if (empty($first_name)) {
+                    echo "<div class='alert alert-danger'>Please fill in your first name.</div>";
+                    $flag = false;
+                }
+
+                if (empty($last_name)) {
+                    echo "<div class='alert alert-danger'>Please fill in your last name.</div>";
+                    $flag = false;
+                }
+
+                if (empty($gender)) {
+                    echo "<div class='alert alert-danger'>Please select your gender.</div>";
+                    $flag = false;
+                }
+
+                if (empty($date_of_birth)) {
+                    echo "<div class='alert alert-danger'>Please select your date of birth.</div>";
+                    $flag = false;
+                }
+
+                if (empty($account_status)) {
+                    echo "<div class='alert alert-danger'>Please select your account status.</div>";
+                    $flag = false;
+                }
+
+
+                if ($flag = true && $stmt->execute()) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                 }
             }
@@ -97,6 +132,19 @@
                 <tr>
                     <td>Date Of Birth</td>
                     <td><input type='date' name='date_of_birth' class='form-control' /></td>
+                </tr>
+                <tr>
+                    <td>Account Status</td>
+                    <td>
+                        <div class="form-control">
+                            <input type="radio" id="active" name="account_status" value="active">
+                            <label for="active">Active</label><br>
+                            <input type="radio" id="pending" name="account_status" value="pending">
+                            <label for="pending">Pending</label><br>
+                            <input type="radio" id="inactive" name="account_status" value="inactive">
+                            <label for="inactive">Inactive</label>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td></td>
