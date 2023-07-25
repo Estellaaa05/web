@@ -93,8 +93,10 @@
                     $flag = false;
                 }
 
-                if ($flag = true && $stmt->execute()) {
-                    echo "<div class='alert alert-success'>Record was saved.</div>";
+                if ($flag = true) {
+                    if ($stmt->execute()) {
+                        echo "<div class='alert alert-success'>Record was saved.</div>";
+                    }
                 }
             }
             // show error
