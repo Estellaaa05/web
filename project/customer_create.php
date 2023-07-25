@@ -40,9 +40,9 @@
                 $account_status = isset($_POST['account_status']) ? $_POST['account_status'] : '';
                 // bind the parameters
         
-                $password = md5($password);
+                $password_rc = md5($password);
                 $stmt->bindParam(':username', $username); //bindParam = put $name into :name
-                $stmt->bindParam(':password', $password);
+                $stmt->bindParam(':password', $password_rc);
                 $stmt->bindParam(':first_name', $first_name);
                 $stmt->bindParam(':last_name', $last_name);
                 $stmt->bindParam(':gender', $gender);
@@ -67,7 +67,7 @@
                 if (empty($confirm_password)) {
                     echo "<div class='alert alert-danger'>Please fill in confirm password.</div>";
                     $flag = false;
-                } else if ($_POST['password'] !== $confirm_password) {
+                } else if ($password !== $confirm_password) {
                     echo "<div class='alert alert-danger'>Passwords do not match.</div>";
                     $flag = false;
                 }
