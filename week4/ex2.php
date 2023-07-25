@@ -7,6 +7,7 @@ function checkError($firstName, $lastName, $m, $d, $y, $username, $password, $co
     } else if (!checkdate($m, $d, $y)) {
         echo "<span class='error'>Invalid date of birth.</span>";
 
+        //} else if (strlen($username) < 6 || !ctype_alpha(substr($username, 0)) || !ctype_alnum(substr($username, -1))){
     } else if (strlen($username) < 6 || !preg_match('/^[a-zA-Z][a-zA-Z0-9_-]*[a-zA-Z0-9]$/', $username)) {
         echo "<span class='error'>Username must be minimum 6 characters, the first character cannot be number, and only _ or - is allowed in between.</span>";
 
