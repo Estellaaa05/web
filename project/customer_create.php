@@ -32,8 +32,8 @@
                 // posted values
                 $username = htmlspecialchars(strip_tags($_POST['username']));
                 $password = htmlspecialchars(strip_tags($_POST['password']));
-                $first_name = htmlspecialchars(strip_tags($_POST['first_name']));
-                $last_name = htmlspecialchars(strip_tags($_POST['last_name']));
+                $first_name = htmlspecialchars(strip_tags(ucwords(strtolower($_POST['first_name']))));
+                $last_name = htmlspecialchars(strip_tags(ucwords(strtolower($_POST['last_name']))));
                 $gender = isset($_POST['gender']) ? htmlspecialchars(strip_tags($_POST['gender'])) : '';
                 $date_of_birth = htmlspecialchars(strip_tags($_POST['date_of_birth']));
                 // bind the parameters
