@@ -27,7 +27,7 @@
         // delete message prompt will be here
         
         // select all data
-        $query = "SELECT id, name, description, price FROM products ORDER BY id DESC";
+        $query = "SELECT id, name, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -49,6 +49,10 @@
             echo "<th>Name</th>";
             echo "<th>Description</th>";
             echo "<th>Price</th>";
+            echo "<th>promotion_price</th>";
+            echo "<th>manufacture_date</th>";
+            echo "<th>expired_date</th>";
+            echo "<th>created</th>";
             echo "<th>Action</th>";
             echo "</tr>";
 
@@ -66,6 +70,10 @@
                 echo "<td>{$name}</td>";
                 echo "<td>{$description}</td>";
                 echo "<td>{$price}</td>";
+                echo "<td>{$promotion_price}</td>";
+                echo "<td>{$manufacture_date}</td>";
+                echo "<td>{$expired_date}</td>";
+                echo "<td>{$created}</td>";
                 echo "<td>";
                 // read one record
                 echo "<a href='product_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";

@@ -31,7 +31,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, description, price FROM products WHERE id = ?";
+            $query = "SELECT id, name, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE id = ?";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -47,6 +47,10 @@
             $name = $row['name'];
             $description = $row['description'];
             $price = $row['price'];
+            $promotion_price = $row['promotion_price'];
+            $manufacture_date = $row['manufacture_date'];
+            $expired_date = $row['expired_date'];
+            $created = $row['created'];
         }
 
         // show error
@@ -75,6 +79,30 @@
                 <td>Price</td>
                 <td>
                     <?php echo htmlspecialchars($price, ENT_QUOTES); ?>
+                </td>
+            </tr>
+            <tr>
+                <td>promotion_price</td>
+                <td>
+                    <?php echo htmlspecialchars($promotion_price, ENT_QUOTES); ?>
+                </td>
+            </tr>
+            <tr>
+                <td>manufacture_date</td>
+                <td>
+                    <?php echo htmlspecialchars($manufacture_date, ENT_QUOTES); ?>
+                </td>
+            </tr>
+            <tr>
+                <td>expired_date</td>
+                <td>
+                    <?php echo htmlspecialchars($expired_date, ENT_QUOTES); ?>
+                </td>
+            </tr>
+            <tr>
+                <td>created</td>
+                <td>
+                    <?php echo htmlspecialchars($created, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
