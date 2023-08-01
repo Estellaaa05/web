@@ -44,6 +44,7 @@
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // values to fill up our form
+            // extract($row);
             $name = $row['name'];
             $description = $row['description'];
             $price = $row['price'];
