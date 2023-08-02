@@ -62,6 +62,9 @@
                 if (empty($password)) {
                     echo "<div class='alert alert-danger'>Please fill in your password.</div>";
                     $flag = false;
+                } elseif (strlen($password) < 6) {
+                    echo "<div class='alert alert-danger'>Password must be at least 6 characters.</div>";
+                    $flag = false;
                 }
 
                 if (empty($confirm_password)) {
@@ -101,6 +104,7 @@
                 if ($flag == true) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
+                        $username = $first_name = $last_name = $gender = $date_of_birth = $account_status = '';
                     }
                 }
             }
@@ -117,7 +121,8 @@
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Username</td>
-                    <td><input type='text' name='username' class='form-control' /></td>
+                    <td><input type='text' name='username' class='form-control'
+                            value="<?php echo isset($username) ? $username : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Password</td>
@@ -129,36 +134,42 @@
                 </tr>
                 <tr>
                     <td>First Name</td>
-                    <td><input type='text' name='first_name' class='form-control' /></td>
+                    <td><input type='text' name='first_name' class='form-control'
+                            value="<?php echo isset($first_name) ? $first_name : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Last Name</td>
-                    <td><input type='text' name='last_name' class='form-control' /></td>
+                    <td><input type='text' name='last_name' class='form-control'
+                            value="<?php echo isset($last_name) ? $last_name : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Gender</td>
                     <td>
                         <div class="form-control">
-                            <input type="radio" id="female" name="gender" value="female">
+                            <input type="radio" id="female" name="gender" value="female" <?php echo (isset($gender) && $gender == "female") ? "checked" : ''; ?>>
                             <label for="female">Female</label><br>
-                            <input type="radio" id="male" name="gender" value="male">
+
+                            <input type="radio" id="male" name="gender" value="male" <?php echo (isset($gender) && $gender == "male") ? "checked" : ''; ?>>
                             <label for="male">Male</label>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>Date Of Birth</td>
-                    <td><input type='date' name='date_of_birth' class='form-control' /></td>
+                    <td><input type='date' name='date_of_birth' class='form-control'
+                            value="<?php echo isset($date_of_birth) ? $date_of_birth : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Account Status</td>
                     <td>
                         <div class="form-control">
-                            <input type="radio" id="active" name="account_status" value="active">
+                            <input type="radio" id="active" name="account_status" value="active" <?php echo (isset($account_status) && $account_status == "active") ? "checked" : ''; ?>>
                             <label for="active">Active</label><br>
-                            <input type="radio" id="pending" name="account_status" value="pending">
+
+                            <input type="radio" id="pending" name="account_status" value="pending" <?php echo (isset($account_status) && $account_status == "pending") ? "checked" : ''; ?>>
                             <label for="pending">Pending</label><br>
-                            <input type="radio" id="inactive" name="account_status" value="inactive">
+
+                            <input type="radio" id="inactive" name="account_status" value="inactive" <?php echo (isset($account_status) && $account_status == "inactive") ? "checked" : ''; ?>>
                             <label for="inactive">Inactive</label>
                         </div>
                     </td>

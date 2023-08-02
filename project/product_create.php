@@ -21,16 +21,19 @@
         <!-- html form to create product will be here -->
         <!-- PHP insert code will be here -->
         <?php
+        include 'config/database.php';
         if ($_POST) {
             // include database connection
-            include 'config/database.php'; //connect去那个database
+        
             try {
                 // insert query
-                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, promotion_price=:promotion_price, manufacture_date=:manufacture_date, expired_date=:expired_date, created=:created";
+                $query = "INSERT INTO products SET name=:name, category_ID=:category_ID, description=:description, price=:price, promotion_price=:promotion_price, manufacture_date=:manufacture_date, expired_date=:expired_date, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query); //con是连接database的钥匙
+        
                 // posted values
                 $name = strip_tags($_POST['name']);
+                $category_ID = $_POST['category_ID'];
                 $description = strip_tags($_POST['description']);
                 $price = strip_tags($_POST['price']);
                 $promotion_price = strip_tags($_POST['promotion_price']);
@@ -38,6 +41,7 @@
                 $expired_date = $_POST['expired_date'];
                 // bind the parameters
                 $stmt->bindParam(':name', $name); //bindParam = 把$name放进:name里面
+                $stmt->bindParam(':category_ID', $category_ID);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':price', $price);
                 $stmt->bindParam(':promotion_price', $promotion_price);
@@ -50,6 +54,11 @@
                 $flag = true;
                 if (empty($name)) {
                     echo "<div class='alert alert-danger'>Please fill in your name.</div>";
+                    $flag = false;
+                }
+
+                if ($category_ID == "") {
+                    echo "<div class='alert alert-danger'>Please select a category.</div>";
                     $flag = false;
                 }
 
@@ -96,6 +105,7 @@
                 if ($flag = true) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
+                        $name = $description = $price = $promotion_price = $manufacture_date = $expired_date = '';
                     }
                 }
             }
@@ -105,6 +115,11 @@
             }
 
         }
+
+        $select_query = "SELECT category_ID,category_name FROM product_categories";
+        $select_stmt = $con->prepare($select_query);
+        $select_stmt->execute();
+
         ?>
 
         <!-- html form here where the product information will be entered -->
@@ -112,27 +127,55 @@
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
-                    <td><input type='text' name='name' class='form-control' /></td>
+                    <td><input type='text' name='name' class='form-control'
+                            value="<?php echo isset($name) ? $name : ''; ?>" /></td>
                 </tr>
+
+                <tr>
+                    <td>Category</td>
+                    <td>
+                        <select class="form-select" aria-label="Default select example" name="category_ID"
+                            id="category_ID">
+                            <option value="">Select Category</option>
+                            <?php
+                            while ($row = $select_stmt->fetch(PDO::FETCH_ASSOC)) {
+
+                                extract($row);
+
+                                //$selected = ($category_ID !== "") ? "selected" : "";
+                                // echo "<option value = '$category_ID' $selected>$category_name</option>";
+                            
+                                echo "<option value = '$category_ID'>$category_name</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+
                 <tr>
                     <td>Description</td>
-                    <td><textarea name='description' class='form-control'></textarea></td>
+                    <td><textarea name='description'
+                            class='form-control'><?php echo isset($description) ? $description : ''; ?></textarea></td>
                 </tr>
                 <tr>
                     <td>Price</td>
-                    <td><input type='text' name='price' class='form-control' /></td>
+                    <td><input type='text' name='price' class='form-control'
+                            value="<?php echo isset($price) ? $price : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Promotion Price</td>
-                    <td><input type='text' name='promotion_price' class='form-control' /></td>
+                    <td><input type='text' name='promotion_price' class='form-control'
+                            value="<?php echo isset($promotion_price) ? $promotion_price : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Manufacture Date</td>
-                    <td><input type='date' name='manufacture_date' class='form-control' /></td>
+                    <td><input type='date' name='manufacture_date' class='form-control'
+                            value="<?php echo isset($manufacture_date) ? $manufacture_date : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Expired Date</td>
-                    <td><input type='date' name='expired_date' class='form-control' /></td>
+                    <td><input type='date' name='expired_date' class='form-control'
+                            value="<?php echo isset($expired_date) ? $expired_date : ''; ?>" /></td>
                 </tr>
                 <tr>
                     <td></td>
