@@ -4,11 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>Create Product</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>PDO - Create a Record - PHP CRUD Tutorial</title>
-    <!-- Latest compiled and minified Bootstrap CSS (Apply your Bootstrap here -->
 </head>
 
 <body>
@@ -21,7 +19,11 @@
         <!-- html form to create product will be here -->
         <!-- PHP insert code will be here -->
         <?php
+
         include 'config/database.php';
+
+        $submitted_category_ID = '';
+
         if ($_POST) {
             // include database connection
         
@@ -33,7 +35,7 @@
         
                 // posted values
                 $name = strip_tags($_POST['name']);
-                $category_ID = $_POST['category_ID'];
+                $submitted_category_ID = $_POST['category_ID'];
                 $description = strip_tags($_POST['description']);
                 $price = strip_tags($_POST['price']);
                 $promotion_price = strip_tags($_POST['promotion_price']);
@@ -41,7 +43,7 @@
                 $expired_date = $_POST['expired_date'];
                 // bind the parameters
                 $stmt->bindParam(':name', $name); //bindParam = 把$name放进:name里面
-                $stmt->bindParam(':category_ID', $category_ID);
+                $stmt->bindParam(':category_ID', $submitted_category_ID);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':price', $price);
                 $stmt->bindParam(':promotion_price', $promotion_price);
@@ -57,7 +59,7 @@
                     $flag = false;
                 }
 
-                if ($category_ID == "") {
+                if ($submitted_category_ID == "") {
                     echo "<div class='alert alert-danger'>Please select a category.</div>";
                     $flag = false;
                 }
@@ -105,7 +107,9 @@
                 if ($flag = true) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
-                        $name = $description = $price = $promotion_price = $manufacture_date = $expired_date = '';
+                        $name = $submitted_category_ID = $description = $price = $promotion_price = $manufacture_date = $expired_date = '';
+                    } else {
+                        echo "<div class='alert alert-danger'>Unable to save record.</div>";
                     }
                 }
             }
@@ -134,18 +138,16 @@
                 <tr>
                     <td>Category</td>
                     <td>
-                        <select class="form-select" aria-label="Default select example" name="category_ID"
-                            id="category_ID">
+                        <select class="form-select" name="category_ID" id="category_ID">
                             <option value="">Select Category</option>
                             <?php
+
                             while ($row = $select_stmt->fetch(PDO::FETCH_ASSOC)) {
 
                                 extract($row);
 
-                                //$selected = ($category_ID !== "") ? "selected" : "";
-                                // echo "<option value = '$category_ID' $selected>$category_name</option>";
-                            
-                                echo "<option value = '$category_ID'>$category_name</option>";
+                                $selected = ($category_ID == $submitted_category_ID) ? 'selected' : '';
+                                echo "<option value='$category_ID' $selected>$category_name</option>";
                             }
                             ?>
                         </select>

@@ -4,11 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>Create Customer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>PDO - Create a Record - PHP CRUD Tutorial</title>
-    <!-- Latest compiled and minified Bootstrap CSS (Apply your Bootstrap here -->
 </head>
 
 <body>
@@ -40,9 +38,11 @@
                 $account_status = isset($_POST['account_status']) ? $_POST['account_status'] : '';
                 // bind the parameters
         
-                $password_rc = md5($password);
+                //$password_rc = md5($password);
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
                 $stmt->bindParam(':username', $username); //bindParam = put $name into :name
-                $stmt->bindParam(':password', $password_rc);
+                $stmt->bindParam(':password', $password_hash);
                 $stmt->bindParam(':first_name', $first_name);
                 $stmt->bindParam(':last_name', $last_name);
                 $stmt->bindParam(':gender', $gender);
@@ -105,6 +105,8 @@
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
                         $username = $first_name = $last_name = $gender = $date_of_birth = $account_status = '';
+                    } else {
+                        echo "<div class='alert alert-danger'>Unable to save record.</div>";
                     }
                 }
             }
