@@ -21,7 +21,7 @@
         <?php
         // get passed parameter value, in this case, the record ID
         // isset() is a PHP function used to verify if a value is there or not
-        $username = isset($_GET['username']) ? $_GET['username'] : die('ERROR: Record username not found.');
+        $ID = isset($_GET['ID']) ? $_GET['ID'] : die('ERROR: Record ID not found.');
 
         //include database connection
         include 'config/database.php';
@@ -29,11 +29,11 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE username = ?";
+            $query = "SELECT ID,username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE ID = ?";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
-            $stmt->bindParam(1, $username);
+            $stmt->bindParam(1, $ID);
 
             // execute our query
             $stmt->execute();
@@ -42,7 +42,7 @@
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // values to fill up our form
-            $registration_date_time = $row['registration_date_time'];
+            $ID = $row['ID'];
             $username = $row['username'];
             $password = $row['password'];
             $first_name = $row['first_name'];
@@ -50,6 +50,7 @@
             $gender = $row['gender'];
             $date_of_birth = $row['date_of_birth'];
             $account_status = $row['account_status'];
+            $registration_date_time = $row['registration_date_time'];
         }
 
         // show error
@@ -62,9 +63,9 @@
         <!--we have our html table here where the record will be displayed-->
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
-                <td>Registration Datetime</td>
+                <td>ID</td>
                 <td>
-                    <?php echo htmlspecialchars($registration_date_time, ENT_QUOTES); ?>
+                    <?php echo htmlspecialchars($ID, ENT_QUOTES); ?>
                     <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
                 </td>
             </tr>
@@ -108,6 +109,13 @@
                 <td>Account Status</td>
                 <td>
                     <?php echo htmlspecialchars($account_status, ENT_QUOTES); ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Registration Datetime</td>
+                <td>
+                    <?php echo htmlspecialchars($registration_date_time, ENT_QUOTES); ?>
+                    <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
                 </td>
             </tr>
             <tr>

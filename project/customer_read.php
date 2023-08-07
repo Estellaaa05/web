@@ -24,7 +24,7 @@
         // delete message prompt will be here
         
         // select all data
-        $query = "SELECT username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY registration_date_time DESC";
+        $query = "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY ID ASC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -42,7 +42,7 @@
         
             //creating our table heading
             echo "<tr>";
-            echo "<th>Registration Datetime</th>";
+            echo "<th>ID</th>";
             echo "<th>Username</th>";
             echo "<th>Password</th>";
             echo "<th>First Name</th>";
@@ -50,6 +50,7 @@
             echo "<th>Gender</th>";
             echo "<th>Date Of Birth</th>";
             echo "<th>Account Status</th>";
+            echo "<th>Registration Datetime</th>";
             echo "<th>Action</th>";
             echo "</tr>";
 
@@ -63,7 +64,7 @@
                 extract($row);
                 // creating new table row per record
                 echo "<tr>";
-                echo "<td>{$registration_date_time}</td>";
+                echo "<td>{$ID}</td>";
                 echo "<td>{$username}</td>"; //curly brace:substitute the values of the corresponding variables
                 echo "<td>{$password}</td>";
                 echo "<td>{$first_name}</td>";
@@ -71,19 +72,19 @@
                 echo "<td>{$gender}</td>";
                 echo "<td>{$date_of_birth}</td>";
                 echo "<td>{$account_status}</td>";
+                echo "<td>{$registration_date_time}</td>";
                 echo "<td>";
                 // read one record
-                echo "<a href='customer_read_one.php?username={$username}' class='btn btn-info m-r-1em'>Read</a>";
+                echo "<a href='customer_read_one.php?ID={$ID}' class='btn btn-info m-r-1em'>Read</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='update.php?id={$username}' class='btn btn-primary m-r-1em'>Edit</a>";
+                echo "<a href='update.php?id={$ID}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$username});'  class='btn btn-danger'>Delete</a>";
+                echo "<a href='#' onclick='delete_user({$ID});'  class='btn btn-danger'>Delete</a>";
                 echo "</td>";
                 echo "</tr>";
             }
-
 
             // end table
             echo "</table>";
