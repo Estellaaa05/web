@@ -24,7 +24,7 @@
         // delete message prompt will be here
         
         // select all data
-        $query = "SELECT id, name, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id DESC";
+        $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -44,12 +44,13 @@
             echo "<tr>";
             echo "<th>ID</th>";
             echo "<th>Name</th>";
+            echo "<th>Category ID</th>";
             echo "<th>Description</th>";
             echo "<th>Price</th>";
-            echo "<th>promotion_price</th>";
-            echo "<th>manufacture_date</th>";
-            echo "<th>expired_date</th>";
-            echo "<th>created</th>";
+            echo "<th>Promotion Price</th>";
+            echo "<th>Manufacture Date</th>";
+            echo "<th>Expired Date</th>";
+            echo "<th>Created</th>";
             echo "<th>Action</th>";
             echo "</tr>";
 
@@ -65,6 +66,7 @@
                 echo "<tr>";
                 echo "<td>{$id}</td>"; //curly brace:substitute the values of the corresponding variables
                 echo "<td>{$name}</td>";
+                echo "<td>{$category_ID}</td>";
                 echo "<td>{$description}</td>";
                 echo "<td>{$price}</td>";
                 echo "<td>{$promotion_price}</td>";

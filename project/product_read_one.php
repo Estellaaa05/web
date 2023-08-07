@@ -29,7 +29,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE id = ?";
+            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE id = ?";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -44,6 +44,7 @@
             // values to fill up our form
             // extract($row);
             $name = $row['name'];
+            $category_ID = $row['category_ID'];
             $description = $row['description'];
             $price = $row['price'];
             $promotion_price = $row['promotion_price'];
@@ -69,6 +70,13 @@
                 </td>
             </tr>
             <tr>
+                <td>Category ID</td>
+                <td>
+                    <?php echo htmlspecialchars($category_ID, ENT_QUOTES); ?>
+                    <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
+                </td>
+            </tr>
+            <tr>
                 <td>Description</td>
                 <td>
                     <?php echo htmlspecialchars($description, ENT_QUOTES); ?>
@@ -81,25 +89,25 @@
                 </td>
             </tr>
             <tr>
-                <td>promotion_price</td>
+                <td>Promotion Price</td>
                 <td>
                     <?php echo htmlspecialchars($promotion_price, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>manufacture_date</td>
+                <td>Manufacture Date</td>
                 <td>
                     <?php echo htmlspecialchars($manufacture_date, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>expired_date</td>
+                <td>Expired Date</td>
                 <td>
                     <?php echo htmlspecialchars($expired_date, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>created</td>
+                <td>Created</td>
                 <td>
                     <?php echo htmlspecialchars($created, ENT_QUOTES); ?>
                 </td>
