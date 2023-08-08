@@ -25,11 +25,16 @@
         <?php
         // include database connection
         include 'config/database.php';
+        $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id ASC";
+
         if ($_GET) {
             $search = $_GET['search'];
+
+            if (empty($search)) {
+                echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
+            }
+
             $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE name LIKE '%$search%' ORDER BY id ASC";
-        } else {
-            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id ASC";
         }
 
         $stmt = $con->prepare($query);
