@@ -28,7 +28,7 @@
 
         if ($_GET) {
             $search = $_GET['search'];
-            $query = "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
+            $query = "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE (first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR username LIKE '%$search%') ORDER BY ID ASC";
         } else {
             "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY ID ASC";
         }

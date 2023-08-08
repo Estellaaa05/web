@@ -27,9 +27,9 @@
         include 'config/database.php';
         if ($_GET) {
             $search = $_GET['search'];
-            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE name LIKE '%$search%' ORDER BY id DESC";
+            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE name LIKE '%$search%' ORDER BY id ASC";
         } else {
-            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id DESC";
+            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id ASC";
         }
 
         $stmt = $con->prepare($query);
