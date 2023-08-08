@@ -16,23 +16,25 @@
             <h1>Read Products</h1>
         </div>
 
-        <!-- PHP code to read records will be here -->
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET">
+            <a href='product_create.php' class='btn btn-primary m-b-1em'>Create New Product</a>
+            <input type="search" name="search" />
+            <input type="submit" class='btn btn-info m-r-1em' value="Search" />
+        </form>
+
         <?php
         // include database connection
         include 'config/database.php';
+        if ($_GET) {
+            $search = $_GET['search'];
+            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE name LIKE '%$search%' ORDER BY id DESC";
+        } else {
+            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id DESC";
+        }
 
-        // delete message prompt will be here
-        
-        // select all data
-        $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products ORDER BY id DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
-
-        // this is how to get number of rows returned
         $num = $stmt->rowCount();
-
-        // link to create record form
-        echo "<a href='product_create.php' class='btn btn-primary m-b-1em'>Create New Product</a>";
 
         //check if more than 0 record found
         if ($num > 0) {
@@ -54,9 +56,6 @@
             echo "<th>Action</th>";
             echo "</tr>";
 
-            // table body will be here
-            // retrieve our table contents
-        
             // a "loop" repeatedly execute block of code when specified condition is true until the condition evaluates to false.
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 // extract row
@@ -85,8 +84,6 @@
                 echo "</td>";
                 echo "</tr>";
             }
-
-
             // end table
             echo "</table>";
         }

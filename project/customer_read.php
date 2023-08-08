@@ -16,23 +16,28 @@
             <h1>Read Customers</h1>
         </div>
 
-        <!-- PHP code to read records will be here -->
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET">
+            <a href='customer_create.php' class='btn btn-primary m-b-1em'>Create New Customer</a>
+            <input type="search" name="search" />
+            <input type="submit" class='btn btn-info m-r-1em' value="Search" />
+        </form>
+
         <?php
         // include database connection
         include 'config/database.php';
 
-        // delete message prompt will be here
-        
-        // select all data
-        $query = "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY ID ASC";
+        if ($_GET) {
+            $search = $_GET['search'];
+            $query = "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
+        } else {
+            "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY ID ASC";
+        }
+
         $stmt = $con->prepare($query);
         $stmt->execute();
 
         // this is how to get number of rows returned
         $num = $stmt->rowCount();
-
-        // link to create record form
-        echo "<a href='customer_create.php' class='btn btn-primary m-b-1em'>Create New Customer</a>";
 
         //check if more than 0 record found
         if ($num > 0) {
