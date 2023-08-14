@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -10,12 +18,16 @@
 </head>
 
 <body>
+    <?php
+    include 'navbar.php';
+    ?>
+
     <div class="container">
         <div class="page-header">
             <h1>Welcome!</h1>
         </div>
-
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>

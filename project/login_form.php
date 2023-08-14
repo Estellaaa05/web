@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (isset($_SESSION["warning"])) {
+    echo "<div class='alert alert-danger'>" . $_SESSION["warning"] . "</div>";
+    session_unset();
+    session_destroy();
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -16,28 +24,32 @@
         </div>
 
         <?php
+
+        $usernameEr = $passwordEr = "";
+
         if ($_POST) {
             include 'config/database.php';
             try {
 
-                $login_username = strip_tags($_POST['username']);
+                $login_usernameEmail = strip_tags($_POST['usernameEmail']);
                 $login_password = strip_tags($_POST['password']);
 
                 $flag = true;
-                if (empty($login_username)) {
-                    echo "<div class='alert alert-danger'>Please enter username.</div>";
+                if (empty($login_usernameEmail)) {
+                    $usernameEr = "Please enter Username/Email.";
                     $flag = false;
                 }
 
                 if (empty($login_password)) {
-                    echo "<div class='alert alert-danger'>Please enter password.</div>";
+                    $passwordEr = "Please enter Password.";
                     $flag = false;
                 }
 
-                if ($flag == true) {
-                    $query = "SELECT username,password,account_status FROM customers WHERE username = :username";
+                if ($flag) {
+                    $query = "SELECT username,email,password,account_status FROM customers WHERE username = :username OR email = :email";
                     $stmt = $con->prepare($query);
-                    $stmt->bindParam(':username', $login_username);
+                    $stmt->bindParam(':username', $login_usernameEmail);
+                    $stmt->bindParam(':email', $login_usernameEmail);
                     $stmt->execute();
 
                     $num = $stmt->rowCount();
@@ -51,6 +63,7 @@
                             if ($account_status !== "active") {
                                 echo "<div class='alert alert-danger'>Inactive account.</div>";
                             } else {
+                                $_SESSION["login"] = $login_usernameEmail;
                                 header("Location:dashboard.php");
                                 exit;
                             }
@@ -58,7 +71,7 @@
                             echo "<div class='alert alert-danger'>Incorrect password.</div>";
                         }
                     } else {
-                        echo "<div class='alert alert-danger'>Username not found.</div>";
+                        echo "<div class='alert alert-danger'>Username/Email not found.</div>";
                     }
                 }
 
@@ -71,12 +84,21 @@
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
-                    <td>Username</td>
-                    <td><input type='text' name='username' class='form-control' /></td>
+                    <td>Username / Email</td>
+                    <td><input type='text' name='usernameEmail' class='form-control'
+                            value="<?php echo isset($login_usernameEmail) ? $login_usernameEmail : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $usernameEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='password' name='password' class='form-control' /></td>
+                    <td><input type='password' name='password' class='form-control' />
+                        <div class='text-danger'>
+                            <?php echo $passwordEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td></td>

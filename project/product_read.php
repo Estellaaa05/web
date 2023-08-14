@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,6 +18,9 @@
 </head>
 
 <body>
+    <?php
+    include 'navbar.php';
+    ?>
     <!-- container -->
     <div class="container">
         <div class="page-header">
@@ -18,7 +29,8 @@
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET">
             <a href='product_create.php' class='btn btn-primary m-b-1em'>Create New Product</a>
-            <input type="search" name="search" />
+            <input type="search" name="search"
+                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
             <input type="submit" class='btn btn-info m-r-1em' value="Search" />
         </form>
 

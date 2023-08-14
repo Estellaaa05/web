@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,6 +18,9 @@
 </head>
 
 <body>
+    <?php
+    include 'navbar.php';
+    ?>
     <!-- container -->
     <div class="container">
         <div class="page-header">
@@ -22,7 +33,7 @@
 
         include 'config/database.php';
 
-        $submitted_category_ID = '';
+        $nameEr = $categoryEr = $descriptionEr = $priceEr = $promotionEr = $manufactureEr = $expiredEr = $submitted_category_ID = "";
 
         if ($_POST) {
             // include database connection
@@ -55,56 +66,53 @@
                 // 前面都是在准备 最后在这里Execute the query
                 $flag = true;
                 if (empty($name)) {
-                    echo "<div class='alert alert-danger'>Please fill in your name.</div>";
+                    $nameEr = "Please fill in your name.";
                     $flag = false;
                 }
 
                 if ($submitted_category_ID == "") {
-                    echo "<div class='alert alert-danger'>Please select a category.</div>";
+                    $categoryEr = "Please select a category.";
                     $flag = false;
                 }
 
                 if (empty($description)) {
-                    echo "<div class='alert alert-danger'>Please fill in the description.</div>";
+                    $descriptionEr = "Please fill in the description.";
                     $flag = false;
                 }
 
                 if (empty($price)) {
-                    echo "<div class='alert alert-danger'>Please fill in the price.</div>";
+                    $priceEr = "Please fill in the price.";
                     $flag = false;
+                } else if (!is_numeric($price)) {
+                    $priceEr = "Please fill in the price using number.";
                 }
 
                 if (empty($promotion_price)) {
-                    echo "<div class='alert alert-danger'>Please fill in the promotion price.</div>";
+                    $promotionEr = "Please fill in the promotion price.";
+                    $flag = false;
+                } else if (!is_numeric($promotion_price)) {
+                    $promotionEr = "Please fill in the promotion price using number.";
+                } else if ($price < $promotion_price) {
+                    $promotionEr = "Promotion price must be cheaper than original price.";
                     $flag = false;
                 }
 
-                if (!is_numeric($price) || !is_numeric($promotion_price)) {
-                    echo "<div class='alert alert-danger'>Please fill in the price using number.</div>";
-                    $flag = false;
-                }
-
-                if ($price < $promotion_price) {
-                    echo "<div class='alert alert-danger'>Promotion price must be cheaper than original price.</div>";
-                    $flag = false;
-                }
-
-                if (empty($manufacture_date) || empty($expired_date)) {
-                    echo "<div class='alert alert-danger'>Please select the manucfacture date.</div>";
+                if (empty($manufacture_date)) {
+                    $manufactureEr = "Please select the manucfacture date.";
                     $flag = false;
                 }
 
                 if (empty($expired_date)) {
-                    echo "<div class='alert alert-danger'>Please select the expired date.</div>";
+                    $expiredEr = "Please select the expired date.";
                     $flag = false;
                 }
 
                 if (strtotime($expired_date) < strtotime($manufacture_date)) {
-                    echo "<div class='alert alert-danger'>Expired date must be later than manufacture date.</div>";
+                    $expiredEr = "Expired date must be later than manufacture date.";
                     $flag = false;
                 }
 
-                if ($flag = true) {
+                if ($flag) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
                         $name = $submitted_category_ID = $description = $price = $promotion_price = $manufacture_date = $expired_date = '';
@@ -132,7 +140,11 @@
                 <tr>
                     <td>Name</td>
                     <td><input type='text' name='name' class='form-control'
-                            value="<?php echo isset($name) ? $name : ''; ?>" /></td>
+                            value="<?php echo isset($name) ? $name : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $nameEr; ?>
+                        </div>
+                    </td>
                 </tr>
 
                 <tr>
@@ -151,33 +163,56 @@
                             }
                             ?>
                         </select>
+                        <div class='text-danger'>
+                            <?php echo $categoryEr; ?>
+                        </div>
                     </td>
                 </tr>
 
                 <tr>
                     <td>Description</td>
                     <td><textarea name='description'
-                            class='form-control'><?php echo isset($description) ? $description : ''; ?></textarea></td>
+                            class='form-control'><?php echo isset($description) ? $description : ''; ?></textarea>
+                        <div class='text-danger'>
+                            <?php echo $descriptionEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Price</td>
                     <td><input type='text' name='price' class='form-control'
-                            value="<?php echo isset($price) ? $price : ''; ?>" /></td>
+                            value="<?php echo isset($price) ? $price : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $priceEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Promotion Price</td>
                     <td><input type='text' name='promotion_price' class='form-control'
-                            value="<?php echo isset($promotion_price) ? $promotion_price : ''; ?>" /></td>
+                            value="<?php echo isset($promotion_price) ? $promotion_price : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $promotionEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Manufacture Date</td>
                     <td><input type='date' name='manufacture_date' class='form-control'
-                            value="<?php echo isset($manufacture_date) ? $manufacture_date : ''; ?>" /></td>
+                            value="<?php echo isset($manufacture_date) ? $manufacture_date : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $manufactureEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Expired Date</td>
                     <td><input type='date' name='expired_date' class='form-control'
-                            value="<?php echo isset($expired_date) ? $expired_date : ''; ?>" /></td>
+                            value="<?php echo isset($expired_date) ? $expired_date : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $expiredEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td></td>

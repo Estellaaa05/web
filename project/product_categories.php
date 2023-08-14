@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,6 +18,9 @@
 </head>
 
 <body>
+    <?php
+    include 'navbar.php';
+    ?>
     <!-- container -->
     <div class="container">
         <div class="page-header">
@@ -19,6 +30,9 @@
         <!-- html form to create product will be here -->
         <!-- PHP insert code will be here -->
         <?php
+
+        $category_nameEr = $category_descriptionEr = "";
+
         if ($_POST) {
             include 'config/database.php';
             try {
@@ -35,16 +49,16 @@
 
                 $flag = true;
                 if (empty($category_name)) {
-                    echo "<div class='alert alert-danger'>Please fill in the category name.</div>";
+                    $category_nameEr = "Please fill in the category name.";
                     $flag = false;
                 }
 
                 if (empty($category_description)) {
-                    echo "<div class='alert alert-danger'>Please fill in the category description.</div>";
+                    $category_descriptionEr = "Please fill in the category description.";
                     $flag = false;
                 }
 
-                if ($flag == true) {
+                if ($flag) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
                         $category_name = $category_description = '';
@@ -63,13 +77,20 @@
                 <tr>
                     <td>Category Name</td>
                     <td><input type='text' name='category_name' class='form-control'
-                            value="<?php echo isset($category_name) ? $category_name : ''; ?>" /></td>
+                            value="<?php echo isset($category_name) ? $category_name : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $category_nameEr; ?>
+                        </div>
+                    </td>
                 </tr>
 
                 <tr>
                     <td>Category Description</td>
                     <td><textarea name='category_description'
                             class='form-control'><?php echo isset($category_description) ? $category_description : ''; ?></textarea>
+                        <div class='text-danger'>
+                            <?php echo $category_descriptionEr; ?>
+                        </div>
                     </td>
                 </tr>
                 <tr>

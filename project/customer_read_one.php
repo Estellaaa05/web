@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,7 +18,9 @@
 </head>
 
 <body>
-
+    <?php
+    include 'navbar.php';
+    ?>
     <!-- container -->
     <div class="container">
         <div class="page-header">
@@ -29,7 +39,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT ID,username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE ID = ?";
+            $query = "SELECT ID,username, email, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE ID = ?";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -44,6 +54,7 @@
             // values to fill up our form
             $ID = $row['ID'];
             $username = $row['username'];
+            $email = $row['email'];
             $password = $row['password'];
             $first_name = $row['first_name'];
             $last_name = $row['last_name'];
@@ -73,6 +84,12 @@
                 <td>Username</td>
                 <td>
                     <?php echo htmlspecialchars($username, ENT_QUOTES); ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>
+                    <?php echo htmlspecialchars($email, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>

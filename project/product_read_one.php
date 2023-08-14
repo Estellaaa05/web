@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,7 +18,9 @@
 </head>
 
 <body>
-
+    <?php
+    include 'navbar.php';
+    ?>
     <!-- container -->
     <div class="container">
         <div class="page-header">

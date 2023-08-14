@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,6 +18,9 @@
 </head>
 
 <body>
+    <?php
+    include 'navbar.php';
+    ?>
     <!-- container -->
     <div class="container">
         <div class="page-header">
@@ -19,16 +30,22 @@
         <!-- html form to create product will be here -->
         <!-- PHP insert code will be here -->
         <?php
+
+        $usernameEr = $emailEr = $passwordEr = $confirm_passwordEr = $first_nameEr = $last_nameEr = $genderEr = $date_of_birthEr = $account_statusEr = "";
+
         if ($_POST) {
             // include database connection
             include 'config/database.php'; //connect to database
+        
             try {
                 // insert query
-                $query = "INSERT INTO customers SET username=:username, password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, registration_date_time=:registration_date_time, account_status=:account_status";
+                $query = "INSERT INTO customers SET username=:username, email=:email, password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, registration_date_time=:registration_date_time, account_status=:account_status";
                 // prepare query for execution
                 $stmt = $con->prepare($query); //con connect database
                 // posted values
+        
                 $username = strip_tags($_POST['username']);
+                $email = strip_tags($_POST['email']);
                 $password = strip_tags($_POST['password']);
                 $confirm_password = $_POST['confirm_password'];
                 $first_name = strip_tags(ucwords(strtolower($_POST['first_name'])));
@@ -42,6 +59,7 @@
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
                 $stmt->bindParam(':username', $username); //bindParam = put $name into :name
+                $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':password', $password_hash);
                 $stmt->bindParam(':first_name', $first_name);
                 $stmt->bindParam(':last_name', $last_name);
@@ -54,57 +72,66 @@
 
                 // Execute the query
                 $flag = true;
+
                 if (empty($username)) {
-                    echo "<div class='alert alert-danger'>Please fill in your username.</div>";
+                    $usernameEr = "Please fill in your username.";
+                    $flag = false;
+                }
+
+                if (empty($email)) {
+                    $emailEr = "Please fill in your email.";
+                    $flag = false;
+                } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $emailEr = "Please fill in a valid email.";
                     $flag = false;
                 }
 
                 if (empty($password)) {
-                    echo "<div class='alert alert-danger'>Please fill in your password.</div>";
+                    $passwordEr = "Please fill in your password.";
                     $flag = false;
                 } elseif (strlen($password) < 6) {
-                    echo "<div class='alert alert-danger'>Password must be at least 6 characters.</div>";
+                    $passwordEr = "Password must be at least 6 characters.";
                     $flag = false;
                 }
 
                 if (empty($confirm_password)) {
-                    echo "<div class='alert alert-danger'>Please fill in confirm password.</div>";
+                    $confirm_passwordEr = "Please fill in confirm password.";
                     $flag = false;
                 } else if ($password !== $confirm_password) {
-                    echo "<div class='alert alert-danger'>Passwords do not match.</div>";
+                    $confirm_passwordEr = "Passwords do not match.";
                     $flag = false;
                 }
 
                 if (empty($first_name)) {
-                    echo "<div class='alert alert-danger'>Please fill in your first name.</div>";
+                    $first_nameEr = "Please fill in your first name.";
                     $flag = false;
                 }
 
                 if (empty($last_name)) {
-                    echo "<div class='alert alert-danger'>Please fill in your last name.</div>";
+                    $last_nameEr = "Please fill in your last name.";
                     $flag = false;
                 }
 
                 if (empty($gender)) {
-                    echo "<div class='alert alert-danger'>Please select your gender.</div>";
+                    $genderEr = "Please select your gender.";
                     $flag = false;
                 }
 
                 if (empty($date_of_birth)) {
-                    echo "<div class='alert alert-danger'>Please select your date of birth.</div>";
+                    $date_of_birthEr = "Please select your date of birth.";
                     $flag = false;
                 }
 
                 if (empty($account_status)) {
-                    echo "<div class='alert alert-danger'>Please select your account status.</div>";
+                    $account_statusEr = "Please select your account status.";
                     $flag = false;
                 }
 
 
-                if ($flag == true) {
+                if ($flag) {
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
-                        $username = $first_name = $last_name = $gender = $date_of_birth = $account_status = '';
+                        $username = $email = $first_name = $last_name = $gender = $date_of_birth = $account_status = '';
                     } else {
                         echo "<div class='alert alert-danger'>Unable to save record.</div>";
                     }
@@ -124,25 +151,54 @@
                 <tr>
                     <td>Username</td>
                     <td><input type='text' name='username' class='form-control'
-                            value="<?php echo isset($username) ? $username : ''; ?>" /></td>
+                            value="<?php echo isset($username) ? $username : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $usernameEr; ?>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td><input type='text' name='email' class='form-control'
+                            value="<?php echo isset($email) ? $email : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $emailEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='password' name='password' class='form-control'></textarea></td>
+                    <td><input type='password' name='password' class='form-control'></textarea>
+                        <div class='text-danger'>
+                            <?php echo $passwordEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Confirm Password</td>
-                    <td><input type='password' name='confirm_password' class='form-control'></textarea></td>
+                    <td><input type='password' name='confirm_password' class='form-control'></textarea>
+                        <div class='text-danger'>
+                            <?php echo $confirm_passwordEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>First Name</td>
                     <td><input type='text' name='first_name' class='form-control'
-                            value="<?php echo isset($first_name) ? $first_name : ''; ?>" /></td>
+                            value="<?php echo isset($first_name) ? $first_name : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $first_nameEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Last Name</td>
                     <td><input type='text' name='last_name' class='form-control'
-                            value="<?php echo isset($last_name) ? $last_name : ''; ?>" /></td>
+                            value="<?php echo isset($last_name) ? $last_name : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $last_nameEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Gender</td>
@@ -154,12 +210,19 @@
                             <input type="radio" id="male" name="gender" value="male" <?php echo (isset($gender) && $gender == "male") ? "checked" : ''; ?>>
                             <label for="male">Male</label>
                         </div>
+                        <div class='text-danger'>
+                            <?php echo $genderEr; ?>
+                        </div>
                     </td>
                 </tr>
                 <tr>
                     <td>Date Of Birth</td>
                     <td><input type='date' name='date_of_birth' class='form-control'
-                            value="<?php echo isset($date_of_birth) ? $date_of_birth : ''; ?>" /></td>
+                            value="<?php echo isset($date_of_birth) ? $date_of_birth : ''; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $date_of_birthEr; ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Account Status</td>
@@ -173,6 +236,9 @@
 
                             <input type="radio" id="inactive" name="account_status" value="inactive" <?php echo (isset($account_status) && $account_status == "inactive") ? "checked" : ''; ?>>
                             <label for="inactive">Inactive</label>
+                        </div>
+                        <div class='text-danger'>
+                            <?php echo $account_statusEr; ?>
                         </div>
                     </td>
                 </tr>

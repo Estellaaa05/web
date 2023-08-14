@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["login"])) {
+    $_SESSION["warning"] = "Please login to proceed.";
+    header("Location:login_form.php");
+    exit;
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -10,6 +18,9 @@
 </head>
 
 <body>
+    <?php
+    include 'navbar.php';
+    ?>
     <!-- container -->
     <div class="container">
         <div class="page-header">
@@ -18,7 +29,8 @@
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET">
             <a href='customer_create.php' class='btn btn-primary m-b-1em'>Create New Customer</a>
-            <input type="search" name="search" />
+            <input type="search" name="search"
+                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
             <input type="submit" class='btn btn-info m-r-1em' value="Search" />
         </form>
 
@@ -26,7 +38,7 @@
         // include database connection
         include 'config/database.php';
 
-        $query = "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY ID ASC";
+        $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY ID ASC";
 
         if ($_GET) {
             $search = $_GET['search'];
@@ -35,7 +47,7 @@
                 echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
             }
 
-            $query = "SELECT ID, username, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
+            $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
         }
 
         $stmt = $con->prepare($query);
@@ -54,6 +66,7 @@
             echo "<tr>";
             echo "<th>ID</th>";
             echo "<th>Username</th>";
+            echo "<th>Email</th>";
             echo "<th>Password</th>";
             echo "<th>First Name</th>";
             echo "<th>Last Name</th>";
@@ -76,6 +89,7 @@
                 echo "<tr>";
                 echo "<td>{$ID}</td>";
                 echo "<td>{$username}</td>"; //curly brace:substitute the values of the corresponding variables
+                echo "<td>{$email}</td>";
                 echo "<td>{$password}</td>";
                 echo "<td>{$first_name}</td>";
                 echo "<td>{$last_name}</td>";
