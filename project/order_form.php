@@ -31,8 +31,8 @@ if (!isset($_SESSION["login"])) {
 
         include 'config/database.php';
 
-        $customer_ID = $product_ID1 = $quantity1 = $product_ID2 = $quantity2 = $product_ID3 = $quantity3 = "";
-        $customer_IDEr = $product_ID1Er = $quantity1Er = $product_ID2Er = $quantity2Er = $product_ID3Er = $quantity3Er = "";
+        $customer_IDEr = $customer_ID = "";
+        $product_IDEr = $quantityEr = array();
 
         if ($_POST) {
 
@@ -44,13 +44,6 @@ if (!isset($_SESSION["login"])) {
                 $order_date = date('Y-m-d H:i:s');
                 $summary_stmt->bindParam(':order_date', $order_date);
 
-                $product_ID1 = $_POST["product_ID1"];
-                $quantity1 = $_POST["quantity1"];
-                $product_ID2 = $_POST["product_ID2"];
-                $quantity2 = $_POST["quantity2"];
-                $product_ID3 = $_POST["product_ID3"];
-                $quantity3 = $_POST["quantity3"];
-
                 $flag = true;
                 $resultFlag = false;
 
@@ -59,45 +52,23 @@ if (!isset($_SESSION["login"])) {
                     $flag = false;
                 }
 
-                if ($product_ID1 == "") {
-                    $product_ID1Er = "Please select product1.";
-                    $flag = false;
-                }
+                for ($k = 0; $k < count($_POST["product_ID"]); $k++) {
+                    $product_IDEr[$k] = "";
+                    if ($_POST["product_ID"][$k] == "") {
+                        $product_IDEr[$k] = "Please select product.";
+                        $flag = false;
+                    }
 
-                if (empty($quantity1)) {
-                    $quantity1Er = "Please fill in the quantity.";
-                    $flag = false;
-                } else if (!is_numeric($quantity1)) {
-                    $quantity1Er = "Please fill in the quantity using numbers.";
-                }
-
-                if ($product_ID2 == "") {
-                    $product_ID2Er = "Please select product2.";
-                    $flag = false;
-                }
-
-                if (empty($quantity2)) {
-                    $quantity2Er = "Please fill in the quantity.";
-                    $flag = false;
-                } else if (!is_numeric($quantity2)) {
-                    $quantity2Er = "Please fill in the quantity using numbers.";
-                }
-
-                if ($product_ID3 == "") {
-                    $product_ID3Er = "Please select product3.";
-                    $flag = false;
-                }
-
-                if (empty($quantity3)) {
-                    $quantity3Er = "Please fill in the quantity.";
-                    $flag = false;
-                } else if (!is_numeric($quantity3)) {
-                    $quantity3Er = "Please fill in the quantity using numbers.";
+                    $quantityEr[$k] = "";
+                    if ($_POST["quantity"][$k] == "") {
+                        $quantityEr[$k] = "Please fill in the quantity.";
+                        $flag = false;
+                    }
                 }
 
                 if ($flag) {
                     if ($summary_stmt->execute()) {
-
+                        //retrieves ID of the last inserted row into a database with an auto-increment column
                         $order_ID = $con->lastInsertId();
 
                         $details_query = "INSERT INTO order_details SET order_ID=:order_ID, product_ID=:product_ID, quantity=:quantity";
@@ -134,6 +105,15 @@ if (!isset($_SESSION["login"])) {
         $selectProduct_stmt = $con->prepare($selectProduct_query);
         $selectProduct_stmt->execute();
 
+        $productID_array = array();
+        $productName_array = array();
+
+        while ($row = $selectProduct_stmt->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            array_push($productID_array, $id);
+            array_push($productName_array, $name);
+        }
+
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -141,7 +121,7 @@ if (!isset($_SESSION["login"])) {
 
                 <tr>
                     <td>Customer</td>
-                    <td>
+                    <td colspan=3>
                         <select class="form-select" name="customer_ID" id="customer_ID">
                             <option value="">Select username</option>
                             <?php
@@ -161,114 +141,47 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
 
-                <tr>
-                    <td>Order1</td>
-                    <td>
-                        <select class="form-select" name="product_ID1" id="product_ID1">
-                            <option value="">Select product</option>
-                            <?php
+                <?php
+                for ($i = 0; $i <= 2; $i++) {
+                    ?>
+                    <tr>
+                        <td>Product
+                            <?php echo $i + 1 ?>
+                        </td>
+                        <td>
+                            <select class="form-select" name="product_ID[]">
+                                <option value="">Select product</option>
+                                <?php
 
-                            while ($row = $selectProduct_stmt->fetch(PDO::FETCH_ASSOC)) {
-
-                                extract($row);
-
-                                $selected = ($id == $product_ID1) ? 'selected' : '';
-                                echo "<option value='$id' $selected>$name</option>";
-                            }
-                            $selectProduct_stmt->closeCursor();
-                            ?>
-                        </select>
-                        <div class='text-danger'>
-                            <?php echo $product_ID1Er; ?>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Quantity</td>
-                    <td><input type='number' name='quantity1' class='form-control'
-                            value="<?php echo isset($quantity1) ? $quantity1 : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $quantity1Er; ?>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Order2</td>
-                    <td>
-                        <select class="form-select" name="product_ID2" id="product_ID2">
-                            <option value="">Select product</option>
-                            <?php
-
-                            $selectProduct_stmt2 = $con->prepare($selectProduct_query);
-                            $selectProduct_stmt2->execute();
-
-                            while ($row = $selectProduct_stmt2->fetch(PDO::FETCH_ASSOC)) {
-
-                                extract($row);
-
-                                $selected = ($id == $product_ID2) ? 'selected' : '';
-                                echo "<option value='$id' $selected>$name</option>";
-                            }
-                            $selectProduct_stmt2->closeCursor();
-                            ?>
-                        </select>
-                        <div class='text-danger'>
-                            <?php echo $product_ID2Er; ?>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Quantity</td>
-                    <td><input type='number' name='quantity2' class='form-control'
-                            value="<?php echo isset($quantity2) ? $quantity2 : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $quantity2Er; ?>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Order3</td>
-                    <td>
-                        <select class="form-select" name="product_ID3" id="product_ID3">
-                            <option value="">Select product</option>
-                            <?php
-
-                            $selectProduct_stmt3 = $con->prepare($selectProduct_query);
-                            $selectProduct_stmt3->execute();
-
-                            while ($row = $selectProduct_stmt3->fetch(PDO::FETCH_ASSOC)) {
-
-                                extract($row);
-
-                                $selected = ($id == $product_ID3) ? 'selected' : '';
-                                echo "<option value='$id' $selected>$name</option>";
-                            }
-                            $selectProduct_stmt3->closeCursor();
-                            ?>
-                        </select>
-                        <div class='text-danger'>
-                            <?php echo $product_ID3Er; ?>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Quantity</td>
-                    <td><input type='number' name='quantity3' class='form-control'
-                            value="<?php echo isset($quantity3) ? $quantity3 : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $quantity3Er; ?>
-                        </div>
-                    </td>
-                </tr>
+                                for ($j = 0; $j < count($productID_array); $j++) {
+                                    $selected = (isset($_POST["product_ID"]) && $productID_array[$j] == $_POST["product_ID"][$i]) ? 'selected' : '';
+                                    echo "<option value='$productID_array[$j]' $selected>$productName_array[$j]</option>";
+                                }
+                                // to reuse the prepared statement
+                                $selectProduct_stmt->closeCursor();
+                                ?>
+                            </select>
+                            <div class='text-danger'>
+                                <?php if (!empty($product_IDEr)) {
+                                    echo $product_IDEr[$i];
+                                } ?>
+                            </div>
+                        </td>
+                        <td>Quantity</td>
+                        <td><input type='number' name='quantity[]' class='form-control'
+                                value="<?php echo isset($quantity1) ? $quantity1 : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php if (!empty($quantityEr)) {
+                                    echo $quantityEr[$i];
+                                } ?>
+                            </div>
+                        </td>
+                    </tr>
+                <?php } ?>
 
                 <tr>
                     <td></td>
-                    <td>
+                    <td colspan=3>
                         <input type='submit' value='Save' class='btn btn-primary' />
                     </td>
                 </tr>
