@@ -52,16 +52,24 @@ if (!isset($_SESSION["login"])) {
                     $flag = false;
                 }
 
+                $productID_array = array_unique($_POST["product_ID"]);
+
                 for ($k = 0; $k < count($_POST["product_ID"]); $k++) {
                     $product_IDEr[$k] = "";
                     if ($_POST["product_ID"][$k] == "") {
                         $product_IDEr[$k] = "Please select product.";
+                        $flag = false;
+                    } else if (sizeof($productID_array) != sizeof($_POST["product_ID"])) {
+                        $product_IDEr[$k] = "Please select different product.";
                         $flag = false;
                     }
 
                     $quantityEr[$k] = "";
                     if ($_POST["quantity"][$k] == "") {
                         $quantityEr[$k] = "Please fill in the quantity.";
+                        $flag = false;
+                    } else if ($_POST["quantity"][$k] < 1) {
+                        $quantityEr[$k] = "The quantity must be more than one.";
                         $flag = false;
                     }
                 }
@@ -73,10 +81,10 @@ if (!isset($_SESSION["login"])) {
 
                         $details_query = "INSERT INTO order_details SET order_ID=:order_ID, product_ID=:product_ID, quantity=:quantity";
 
-                        for ($i = 1; $i <= 3; $i++) {
+                        for ($m = 0; $m < count($_POST["product_ID"]); $m++) {
                             $details_stmt = $con->prepare($details_query);
-                            $product_ID = $_POST["product_ID$i"];
-                            $quantity = $_POST["quantity$i"];
+                            $product_ID = $_POST["product_ID"][$m];
+                            $quantity = $_POST["quantity"][$m];
                             $details_stmt->bindParam(':order_ID', $order_ID);
                             $details_stmt->bindParam(':product_ID', $product_ID);
                             $details_stmt->bindParam(':quantity', $quantity);
@@ -86,7 +94,10 @@ if (!isset($_SESSION["login"])) {
 
                         if ($resultFlag) {
                             echo "<div class='alert alert-success'>Record was saved.</div>";
-                            $customer_ID = $product_ID1 = $quantity1 = $product_ID2 = $quantity2 = $product_ID3 = $quantity3 = '';
+                            $customer_ID = "";
+                            for ($m = 0; $m < count($_POST["product_ID"]); $m++) {
+                                $_POST["product_ID"][$m] = $_POST["quantity"][$m] = '';
+                            }
                         } else {
                             echo "<div class='alert alert-danger'>Unable to save record.</div>";
                         }
@@ -169,7 +180,7 @@ if (!isset($_SESSION["login"])) {
                         </td>
                         <td>Quantity</td>
                         <td><input type='number' name='quantity[]' class='form-control'
-                                value="<?php echo isset($quantity1) ? $quantity1 : ''; ?>" />
+                                value="<?php echo isset($_POST["quantity"][$i]) ? $_POST["quantity"][$i] : ''; ?>" />
                             <div class='text-danger'>
                                 <?php if (!empty($quantityEr)) {
                                     echo $quantityEr[$i];
