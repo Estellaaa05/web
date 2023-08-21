@@ -31,10 +31,20 @@ if (!isset($_SESSION["login"])) {
 
         include 'config/database.php';
 
-        $customer_IDEr = $customer_ID = "";
+        $customer_IDEr = $customer_ID = $totalProductEr = "";
         $product_IDEr = $quantityEr = array();
 
-        if ($_POST) {
+        if (isset($_POST['confirm'])) {
+            $totalProduct = $_POST["totalProduct"];
+
+            if ($_POST["totalProduct"] < 1) {
+                $totalProductEr = "The total product must be more than one.";
+            }
+        } else {
+            $totalProduct = 1;
+        }
+
+        if (isset($_POST['save'])) {
 
             try {
                 $summary_query = "INSERT INTO order_summary SET customer_ID=:customer_ID, order_date=:order_date";
@@ -52,23 +62,34 @@ if (!isset($_SESSION["login"])) {
                     $flag = false;
                 }
 
+                $selectedFlag = false;
                 $productID_array = array_unique($_POST["product_ID"]);
 
                 for ($k = 0; $k < count($_POST["product_ID"]); $k++) {
                     $product_IDEr[$k] = "";
-                    if ($_POST["product_ID"][$k] == "") {
-                        $product_IDEr[$k] = "Please select product.";
-                        $flag = false;
-                    } else if (sizeof($productID_array) != sizeof($_POST["product_ID"])) {
-                        $product_IDEr[$k] = "Please select different product.";
+                    $quantityEr[$k] = "";
+
+                    if (($_POST["product_ID"][$k] !== "")) {
+                        $selectedFlag = true;
+                    }
+
+                    if (!$selectedFlag && sizeof($productID_array) < 2) {
+                        $product_IDEr[$k] = "Please select at least one product.";
                         $flag = false;
                     }
 
-                    $quantityEr[$k] = "";
-                    if ($_POST["quantity"][$k] == "") {
+                    if ($_POST["product_ID"][$k] == "" && $_POST["quantity"][$k] !== "") {
+                        $product_IDEr[$k] = "Please select product.";
+                        $flag = false;
+                        // } else if (sizeof($productID_array) != sizeof($_POST["product_ID"])) {
+                        //     $product_IDEr[$k] = "Please select different product.";
+                        //     $flag = false;
+                    }
+
+                    if ($_POST["quantity"][$k] == "" && $_POST["product_ID"][$k] !== "") {
                         $quantityEr[$k] = "Please fill in the quantity.";
                         $flag = false;
-                    } else if ($_POST["quantity"][$k] < 1) {
+                    } else if ($_POST["quantity"][$k] < 1 && $_POST["product_ID"][$k] !== "") {
                         $quantityEr[$k] = "The quantity must be more than one.";
                         $flag = false;
                     }
@@ -81,12 +102,13 @@ if (!isset($_SESSION["login"])) {
 
                         $details_query = "INSERT INTO order_details SET order_ID=:order_ID, product_ID=:product_ID, quantity=:quantity";
 
+                        //$productID_unique = array_unique($_POST["product_ID"]);
+        
                         for ($m = 0; $m < count($_POST["product_ID"]); $m++) {
                             $details_stmt = $con->prepare($details_query);
-                            $product_ID = $_POST["product_ID"][$m];
                             $quantity = $_POST["quantity"][$m];
                             $details_stmt->bindParam(':order_ID', $order_ID);
-                            $details_stmt->bindParam(':product_ID', $product_ID);
+                            $details_stmt->bindParam(':product_ID', $productID_array[$m]);
                             $details_stmt->bindParam(':quantity', $quantity);
                             $details_stmt->execute();
                             $resultFlag = true;
@@ -94,7 +116,8 @@ if (!isset($_SESSION["login"])) {
 
                         if ($resultFlag) {
                             echo "<div class='alert alert-success'>Record was saved.</div>";
-                            $customer_ID = "";
+                            $_POST["customer_ID"] = '';
+                            $_POST["totalProduct"] = 1;
                             for ($m = 0; $m < count($_POST["product_ID"]); $m++) {
                                 $_POST["product_ID"][$m] = $_POST["quantity"][$m] = '';
                             }
@@ -108,21 +131,25 @@ if (!isset($_SESSION["login"])) {
             }
         }
 
-        $selectCustomer_query = "SELECT ID,username FROM customers";
+        $selectCustomer_query = "SELECT ID,username,first_name,last_name FROM customers";
         $selectCustomer_stmt = $con->prepare($selectCustomer_query);
         $selectCustomer_stmt->execute();
 
-        $selectProduct_query = "SELECT id,name FROM products";
+        $selectProduct_query = "SELECT id,name,price,promotion_price FROM products";
         $selectProduct_stmt = $con->prepare($selectProduct_query);
         $selectProduct_stmt->execute();
 
         $productID_array = array();
         $productName_array = array();
+        $price_array = array();
+        $promotion_price_array = array();
 
         while ($row = $selectProduct_stmt->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
             array_push($productID_array, $id);
             array_push($productName_array, $name);
+            array_push($price_array, $price);
+            array_push($promotion_price_array, $promotion_price);
         }
 
         ?>
@@ -131,6 +158,9 @@ if (!isset($_SESSION["login"])) {
             <table class='table table-hover table-responsive table-bordered'>
 
                 <tr>
+                    <?php
+                    $customer_ID = isset($_POST["customer_ID"]) ? $_POST["customer_ID"] : '';
+                    ?>
                     <td>Customer</td>
                     <td colspan=3>
                         <select class="form-select" name="customer_ID" id="customer_ID">
@@ -142,7 +172,7 @@ if (!isset($_SESSION["login"])) {
                                 extract($row);
 
                                 $selected = ($ID == $customer_ID) ? 'selected' : '';
-                                echo "<option value='$ID' $selected>$username</option>";
+                                echo "<option value='$ID' $selected>$username ($first_name $last_name)</option>";
                             }
                             ?>
                         </select>
@@ -152,8 +182,25 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
 
+                <tr>
+                    <td>Total product</td>
+                    <td colspan=2>
+                        <input type='number' name='totalProduct' class='form-control'
+                            value="<?php echo isset($_POST["totalProduct"]) ? $_POST["totalProduct"] : 1; ?>" />
+                        <div class='text-danger'>
+                            <?php echo $totalProductEr; ?>
+                        </div>
+                    </td>
+                    <td>
+                        <input type='submit' name='confirm' value='Confirm' class='btn btn-info m-r-1em' />
+                    </td>
+                </tr>
+
                 <?php
-                for ($i = 0; $i <= 2; $i++) {
+                $totalProduct = isset($_POST["totalProduct"]) ? $_POST["totalProduct"] : $totalProduct;
+                for ($i = 0; $i < $totalProduct; $i++) {
+                    $productID = isset($_POST["product_ID"][$i]) ? $_POST["product_ID"][$i] : '';
+                    $quantity = isset($_POST["quantity"][$i]) ? $_POST["quantity"][$i] : '';
                     ?>
                     <tr>
                         <td>Product
@@ -163,17 +210,14 @@ if (!isset($_SESSION["login"])) {
                             <select class="form-select" name="product_ID[]">
                                 <option value="">Select product</option>
                                 <?php
-
                                 for ($j = 0; $j < count($productID_array); $j++) {
-                                    $selected = (isset($_POST["product_ID"]) && $productID_array[$j] == $_POST["product_ID"][$i]) ? 'selected' : '';
-                                    echo "<option value='$productID_array[$j]' $selected>$productName_array[$j]</option>";
+                                    $selected = (isset($_POST["product_ID"][$i]) && $productID_array[$j] == $_POST["product_ID"][$i]) ? 'selected' : '';
+                                    echo "<option value='$productID_array[$j]' $selected>$productName_array[$j] - RM$price_array[$j] (RM$promotion_price_array[$j])</option>";
                                 }
-                                // to reuse the prepared statement
-                                $selectProduct_stmt->closeCursor();
                                 ?>
                             </select>
                             <div class='text-danger'>
-                                <?php if (!empty($product_IDEr)) {
+                                <?php if (!empty($product_IDEr) && isset($product_IDEr[$i])) {
                                     echo $product_IDEr[$i];
                                 } ?>
                             </div>
@@ -182,18 +226,20 @@ if (!isset($_SESSION["login"])) {
                         <td><input type='number' name='quantity[]' class='form-control'
                                 value="<?php echo isset($_POST["quantity"][$i]) ? $_POST["quantity"][$i] : ''; ?>" />
                             <div class='text-danger'>
-                                <?php if (!empty($quantityEr)) {
+                                <?php if (!empty($quantityEr) && isset($quantityEr[$i])) {
                                     echo $quantityEr[$i];
                                 } ?>
                             </div>
                         </td>
                     </tr>
-                <?php } ?>
+                    <?php
+                }
+                ?>
 
                 <tr>
                     <td></td>
                     <td colspan=3>
-                        <input type='submit' value='Save' class='btn btn-primary' />
+                        <input type='submit' name='save' value='Save' class='btn btn-primary' />
                     </td>
                 </tr>
             </table>
