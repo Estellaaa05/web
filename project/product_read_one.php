@@ -39,7 +39,8 @@ if (!isset($_SESSION["login"])) {
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE id = ?";
+            $query = "SELECT id, name, p.category_ID, c.category_name, description, price, promotion_price, manufacture_date, expired_date, created FROM products p 
+            LEFT JOIN product_categories c ON p.category_ID = c.category_ID WHERE id = ?";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -55,6 +56,7 @@ if (!isset($_SESSION["login"])) {
             // extract($row);
             $name = $row['name'];
             $category_ID = $row['category_ID'];
+            $category_name = $row['category_name'];
             $description = $row['description'];
             $price = $row['price'];
             $promotion_price = $row['promotion_price'];
@@ -80,9 +82,9 @@ if (!isset($_SESSION["login"])) {
                 </td>
             </tr>
             <tr>
-                <td>Category ID</td>
+                <td>Category</td>
                 <td>
-                    <?php echo htmlspecialchars($category_ID, ENT_QUOTES); ?>
+                    <?php echo htmlspecialchars($category_ID, ENT_QUOTES) . " - " . htmlspecialchars($category_name, ENT_QUOTES); ?>
                     <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
                 </td>
             </tr>
@@ -95,13 +97,13 @@ if (!isset($_SESSION["login"])) {
             <tr>
                 <td>Price</td>
                 <td>
-                    <?php echo htmlspecialchars($price, ENT_QUOTES); ?>
-                </td>
-            </tr>
-            <tr>
-                <td>Promotion Price</td>
-                <td>
-                    <?php echo htmlspecialchars($promotion_price, ENT_QUOTES); ?>
+                    <?php
+                    if ($promotion_price > 0) {
+                        echo "<del>RM" . htmlspecialchars($price, ENT_QUOTES) . "</del> -> RM" . htmlspecialchars($promotion_price, ENT_QUOTES);
+                    } else {
+                        echo "RM" . htmlspecialchars($price, ENT_QUOTES);
+                    }
+                    ?>
                 </td>
             </tr>
             <tr>

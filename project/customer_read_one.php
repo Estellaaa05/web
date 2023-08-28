@@ -55,7 +55,7 @@ if (!isset($_SESSION["login"])) {
             $ID = $row['ID'];
             $username = $row['username'];
             $email = $row['email'];
-            $password = $row['password'];
+            //$password = $row['password'];
             $first_name = $row['first_name'];
             $last_name = $row['last_name'];
             $gender = $row['gender'];
@@ -92,22 +92,17 @@ if (!isset($_SESSION["login"])) {
                     <?php echo htmlspecialchars($email, ENT_QUOTES); ?>
                 </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td>Password</td>
                 <td>
                     <?php echo htmlspecialchars($password, ENT_QUOTES); ?>
                 </td>
-            </tr>
+            </tr> -->
             <tr>
-                <td>First Name</td>
+                <td>Name</td>
                 <td>
-                    <?php echo htmlspecialchars($first_name, ENT_QUOTES); ?>
-                </td>
-            </tr>
-            <tr>
-                <td>Last Name</td>
-                <td>
-                    <?php echo htmlspecialchars($last_name, ENT_QUOTES); ?>
+                    <?php echo htmlspecialchars($first_name, ENT_QUOTES) . " " . htmlspecialchars($last_name, ENT_QUOTES);
+                    ; ?>
                 </td>
             </tr>
             <tr>

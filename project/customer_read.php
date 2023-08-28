@@ -22,17 +22,19 @@ if (!isset($_SESSION["login"])) {
     include 'navbar.php';
     ?>
     <!-- container -->
-    <div class="container">
+    <div class="custom-container">
         <div class="page-header">
             <h1>Read Customers</h1>
         </div>
 
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET">
+        <div class="d-flex justify-content-between align-items-center mb-3">
             <a href='customer_create.php' class='btn btn-primary m-b-1em'>Create New Customer</a>
-            <input type="search" name="search"
-                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
-            <input type="submit" class='btn btn-info m-r-1em' value="Search" />
-        </form>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET" class="d-flex">
+                <input type="search" name="search"
+                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
+                <input type="submit" class='btn btn-warning' value="Search" />
+            </form>
+        </div>
 
         <?php
         // include database connection
@@ -67,9 +69,8 @@ if (!isset($_SESSION["login"])) {
             echo "<th>ID</th>";
             echo "<th>Username</th>";
             echo "<th>Email</th>";
-            echo "<th>Password</th>";
-            echo "<th>First Name</th>";
-            echo "<th>Last Name</th>";
+            //echo "<th>Password</th>";
+            echo "<th>Name</th>";
             echo "<th>Gender</th>";
             echo "<th>Date Of Birth</th>";
             echo "<th>Account Status</th>";
@@ -90,9 +91,8 @@ if (!isset($_SESSION["login"])) {
                 echo "<td>{$ID}</td>";
                 echo "<td>{$username}</td>"; //curly brace:substitute the values of the corresponding variables
                 echo "<td>{$email}</td>";
-                echo "<td>{$password}</td>";
-                echo "<td>{$first_name}</td>";
-                echo "<td>{$last_name}</td>";
+                //echo "<td>{$password}</td>";
+                echo "<td>{$first_name} {$last_name}</td>";
                 echo "<td>{$gender}</td>";
                 echo "<td>{$date_of_birth}</td>";
                 echo "<td>{$account_status}</td>";
@@ -102,7 +102,7 @@ if (!isset($_SESSION["login"])) {
                 echo "<a href='customer_read_one.php?ID={$ID}' class='btn btn-info m-r-1em'>Read</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='update.php?id={$ID}' class='btn btn-primary m-r-1em'>Edit</a>";
+                echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_user({$ID});'  class='btn btn-danger'>Delete</a>";

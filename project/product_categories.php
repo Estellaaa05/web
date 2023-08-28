@@ -37,15 +37,8 @@ if (!isset($_SESSION["login"])) {
             include 'config/database.php';
             try {
 
-                $query = "INSERT INTO product_categories SET category_name=:category_name, category_description=:category_description";
-
-                $stmt = $con->prepare($query);
-
                 $category_name = strip_tags($_POST['category_name']);
                 $category_description = strip_tags($_POST['category_description']);
-
-                $stmt->bindParam(':category_name', $category_name);
-                $stmt->bindParam(':category_description', $category_description);
 
                 $flag = true;
                 if (empty($category_name)) {
@@ -59,6 +52,11 @@ if (!isset($_SESSION["login"])) {
                 }
 
                 if ($flag) {
+                    $query = "INSERT INTO product_categories SET category_name=:category_name, category_description=:category_description";
+                    $stmt = $con->prepare($query);
+                    $stmt->bindParam(':category_name', $category_name);
+                    $stmt->bindParam(':category_description', $category_description);
+
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
                         $category_name = $category_description = '';

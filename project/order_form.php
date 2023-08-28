@@ -32,13 +32,28 @@ if (!isset($_SESSION["login"])) {
         include 'config/database.php';
 
         $customer_IDEr = $customer_ID = $totalProductEr = "";
-        $product_IDEr = $quantityEr = array();
+        $product_IDEr = $quantityEr = $processedProducts = array();
+        $productPrice = $total_price = 0;
+
+        $selectProduct_query = "SELECT id,name,price,promotion_price FROM products";
+        $selectProduct_stmt = $con->prepare($selectProduct_query);
+        $selectProduct_stmt->execute();
+
+        $productID_array = $productName_array = $price_array = $promotion_price_array = $subtotals = array();
+
+        while ($row = $selectProduct_stmt->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            array_push($productID_array, $id);
+            array_push($productName_array, $name);
+            array_push($price_array, $price);
+            array_push($promotion_price_array, $promotion_price);
+        }
 
         if (isset($_POST['confirm'])) {
             $totalProduct = $_POST["totalProduct"];
 
             if ($_POST["totalProduct"] < 1) {
-                $totalProductEr = "The total product must be more than one.";
+                $totalProductEr = "The total product must be at least one.";
             }
         } else {
             $totalProduct = 1;
@@ -47,12 +62,10 @@ if (!isset($_SESSION["login"])) {
         if (isset($_POST['save'])) {
 
             try {
-                $summary_query = "INSERT INTO order_summary SET customer_ID=:customer_ID, order_date=:order_date";
-                $summary_stmt = $con->prepare($summary_query);
+
+                $totalProduct = $_POST["totalProduct"];
                 $customer_ID = $_POST['customer_ID'];
-                $summary_stmt->bindParam(':customer_ID', $customer_ID);
                 $order_date = date('Y-m-d H:i:s');
-                $summary_stmt->bindParam(':order_date', $order_date);
 
                 $flag = true;
                 $resultFlag = false;
@@ -63,7 +76,7 @@ if (!isset($_SESSION["login"])) {
                 }
 
                 $selectedFlag = false;
-                $productID_array = array_unique($_POST["product_ID"]);
+                $productID_unique_array = array_unique($_POST["product_ID"]);
 
                 for ($k = 0; $k < count($_POST["product_ID"]); $k++) {
                     $product_IDEr[$k] = "";
@@ -73,7 +86,7 @@ if (!isset($_SESSION["login"])) {
                         $selectedFlag = true;
                     }
 
-                    if (!$selectedFlag && sizeof($productID_array) < 2) {
+                    if (!$selectedFlag && sizeof($productID_unique_array) < 2) {
                         $product_IDEr[$k] = "Please select at least one product.";
                         $flag = false;
                     }
@@ -81,35 +94,53 @@ if (!isset($_SESSION["login"])) {
                     if ($_POST["product_ID"][$k] == "" && $_POST["quantity"][$k] !== "") {
                         $product_IDEr[$k] = "Please select product.";
                         $flag = false;
-                        // } else if (sizeof($productID_array) != sizeof($_POST["product_ID"])) {
-                        //     $product_IDEr[$k] = "Please select different product.";
-                        //     $flag = false;
                     }
 
                     if ($_POST["quantity"][$k] == "" && $_POST["product_ID"][$k] !== "") {
                         $quantityEr[$k] = "Please fill in the quantity.";
                         $flag = false;
                     } else if ($_POST["quantity"][$k] < 1 && $_POST["product_ID"][$k] !== "") {
-                        $quantityEr[$k] = "The quantity must be more than one.";
+                        $quantityEr[$k] = "The quantity must be at least one.";
                         $flag = false;
                     }
                 }
 
                 if ($flag) {
+                    for ($e = 0; $e < $totalProduct; $e++) {
+                        $selectedProductID = $_POST["product_ID"][$e];
+                        $selectedQuantity = $_POST["quantity"][$e];
+
+                        //find $seleted in $processed
+                        if (!in_array($selectedProductID, $processedProducts)) {
+                            array_push($processedProducts, $selectedProductID);
+                            $productIndex = array_search($selectedProductID, $productID_array);
+                            if ($productIndex !== false) {
+                                $productPrice = $promotion_price_array[$productIndex] > 0 ? $promotion_price_array[$productIndex] : $price_array[$productIndex];
+                                $subtotal_price = $selectedQuantity * $productPrice;
+                                $subtotals[$e] = $subtotal_price;
+                                $total_price += $subtotal_price;
+                            }
+                        }
+                    }
+
+                    $summary_query = "INSERT INTO order_summary SET customer_ID=:customer_ID, total_price=:total_price, order_date=:order_date";
+                    $summary_stmt = $con->prepare($summary_query);
+                    $summary_stmt->bindParam(':customer_ID', $customer_ID);
+                    $summary_stmt->bindParam(':total_price', $total_price);
+                    $summary_stmt->bindParam(':order_date', $order_date);
+
                     if ($summary_stmt->execute()) {
-                        //retrieves ID of the last inserted row into a database with an auto-increment column
                         $order_ID = $con->lastInsertId();
 
-                        $details_query = "INSERT INTO order_details SET order_ID=:order_ID, product_ID=:product_ID, quantity=:quantity";
+                        $details_query = "INSERT INTO order_details SET order_ID=:order_ID, product_ID=:product_ID, quantity=:quantity, subtotal_price=:subtotal_price";
 
-                        //$productID_unique = array_unique($_POST["product_ID"]);
-        
                         for ($m = 0; $m < count($_POST["product_ID"]); $m++) {
                             $details_stmt = $con->prepare($details_query);
                             $quantity = $_POST["quantity"][$m];
                             $details_stmt->bindParam(':order_ID', $order_ID);
-                            $details_stmt->bindParam(':product_ID', $productID_array[$m]);
+                            $details_stmt->bindParam(':product_ID', $productID_unique_array[$m]);
                             $details_stmt->bindParam(':quantity', $quantity);
+                            $details_stmt->bindParam(':subtotal_price', $subtotals[$m]);
                             $details_stmt->execute();
                             $resultFlag = true;
                         }
@@ -134,15 +165,9 @@ if (!isset($_SESSION["login"])) {
         $selectCustomer_query = "SELECT ID,username,first_name,last_name FROM customers";
         $selectCustomer_stmt = $con->prepare($selectCustomer_query);
         $selectCustomer_stmt->execute();
-
-        $selectProduct_query = "SELECT id,name,price,promotion_price FROM products";
-        $selectProduct_stmt = $con->prepare($selectProduct_query);
         $selectProduct_stmt->execute();
 
-        $productID_array = array();
-        $productName_array = array();
-        $price_array = array();
-        $promotion_price_array = array();
+        $productID_array = $productName_array = $price_array = $promotion_price_array = array();
 
         while ($row = $selectProduct_stmt->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
@@ -151,7 +176,6 @@ if (!isset($_SESSION["login"])) {
             array_push($price_array, $price);
             array_push($promotion_price_array, $promotion_price);
         }
-
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -187,6 +211,7 @@ if (!isset($_SESSION["login"])) {
                     <td colspan=2>
                         <input type='number' name='totalProduct' class='form-control'
                             value="<?php echo isset($_POST["totalProduct"]) ? $_POST["totalProduct"] : 1; ?>" />
+
                         <div class='text-danger'>
                             <?php echo $totalProductEr; ?>
                         </div>
@@ -198,10 +223,12 @@ if (!isset($_SESSION["login"])) {
 
                 <?php
                 $totalProduct = isset($_POST["totalProduct"]) ? $_POST["totalProduct"] : $totalProduct;
+
                 for ($i = 0; $i < $totalProduct; $i++) {
                     $productID = isset($_POST["product_ID"][$i]) ? $_POST["product_ID"][$i] : '';
                     $quantity = isset($_POST["quantity"][$i]) ? $_POST["quantity"][$i] : '';
                     ?>
+
                     <tr>
                         <td>Product
                             <?php echo $i + 1 ?>
@@ -212,10 +239,16 @@ if (!isset($_SESSION["login"])) {
                                 <?php
                                 for ($j = 0; $j < count($productID_array); $j++) {
                                     $selected = (isset($_POST["product_ID"][$i]) && $productID_array[$j] == $_POST["product_ID"][$i]) ? 'selected' : '';
-                                    echo "<option value='$productID_array[$j]' $selected>$productName_array[$j] - RM$price_array[$j] (RM$promotion_price_array[$j])</option>";
+
+                                    if ($promotion_price_array[$j] > 0) {
+                                        echo "<option value='$productID_array[$j]' $selected>$productName_array[$j]  (RM$price_array[$j] -> RM$promotion_price_array[$j])</option>";
+                                    } else {
+                                        echo "<option value='$productID_array[$j]' $selected>$productName_array[$j] (RM$price_array[$j])</option>";
+                                    }
                                 }
                                 ?>
                             </select>
+
                             <div class='text-danger'>
                                 <?php if (!empty($product_IDEr) && isset($product_IDEr[$i])) {
                                     echo $product_IDEr[$i];
@@ -240,6 +273,7 @@ if (!isset($_SESSION["login"])) {
                     <td></td>
                     <td colspan=3>
                         <input type='submit' name='save' value='Save' class='btn btn-primary' />
+                        <a href='orderSummary_read.php' class='btn btn-danger'>Back to Read Order</a>
                     </td>
                 </tr>
             </table>

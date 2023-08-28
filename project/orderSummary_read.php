@@ -12,7 +12,7 @@ if (!isset($_SESSION["login"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Read Products</title>
+    <title>Read Order</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
@@ -24,13 +24,13 @@ if (!isset($_SESSION["login"])) {
     <!-- container -->
     <div class="custom-container">
         <div class="page-header">
-            <h1>Read Products</h1>
+            <h1>Read Order</h1>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href='product_create.php' class='btn btn-primary m-b-1em'>Create New Product</a>
+            <a href='order_form.php' class='btn btn-primary m-b-1em'>Create New Order</a>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET" class="d-flex">
-                <input type=" search" name="search"
+                <input type="search" name="search"
                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
                 <input type="submit" class='btn btn-warning' value="Search" />
             </form>
@@ -39,8 +39,9 @@ if (!isset($_SESSION["login"])) {
         <?php
         // include database connection
         include 'config/database.php';
-        $query = "SELECT id, name, p.category_ID, c.category_name, description, price, promotion_price, manufacture_date, expired_date, created FROM products p
-        LEFT JOIN product_categories c ON p.category_ID = c.category_ID ORDER BY id ASC";
+        $query = "SELECT order_ID, os.customer_ID, c.username, c.first_name, c.last_name, total_price, order_date FROM order_summary os 
+        LEFT JOIN customers c ON os.customer_ID = c.ID 
+        ORDER BY order_ID ASC";
 
         if ($_GET) {
             $search = $_GET['search'];
@@ -49,8 +50,8 @@ if (!isset($_SESSION["login"])) {
                 echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
             }
 
-            $query = "SELECT id, name, p.category_ID, c.category_name, description, price, promotion_price, manufacture_date, expired_date, created FROM products p
-            LEFT JOIN product_categories c ON p.category_ID = c.category_ID WHERE name LIKE '%$search%' ORDER BY id ASC";
+            $query = "SELECT order_ID, os.customer_ID, username, first_name, last_name, total_price, order_date FROM order_summary os 
+            LEFT JOIN customers c ON os.customer_ID = c.ID WHERE customer_ID LIKE '%$search%' OR username LIKE '%$search%' OR first_name LIKE '%$search%' OR last_name LIKE '%$search%' ORDER BY order_ID ASC";
         }
 
         $stmt = $con->prepare($query);
@@ -65,14 +66,11 @@ if (!isset($_SESSION["login"])) {
         
             //creating our table heading
             echo "<tr>";
-            echo "<th>ID</th>";
-            echo "<th>Name</th>";
-            echo "<th>Category</th>";
-            echo "<th>Description</th>";
-            echo "<th>Price</th>";
-            echo "<th>Manufacture Date</th>";
-            echo "<th>Expired Date</th>";
-            echo "<th>Created</th>";
+            echo "<th>Order ID</th>";
+            echo "<th>Customer ID</th>";
+            echo "<th>Customer Name</th>";
+            echo "<th>Total Price</th>";
+            echo "<th>Order Date</th>";
             echo "<th>Action</th>";
             echo "</tr>";
 
@@ -83,29 +81,21 @@ if (!isset($_SESSION["login"])) {
                 extract($row);
                 // creating new table row per record
                 echo "<tr>";
-                echo "<td>{$id}</td>"; //curly brace:substitute the values of the corresponding variables
-                echo "<td>{$name}</td>";
-                echo "<td>{$category_ID} - {$category_name}</td>";
-                echo "<td>{$description}</td>";
+                echo "<td>{$order_ID}</td>"; //curly brace:substitute the values of the corresponding variables
+                echo "<td>{$customer_ID}</td>";
+                echo "<td>{$username} ({$first_name} {$last_name})</td>";
+                echo "<td>RM{$total_price}</td>";
+                echo "<td>{$order_date}</td>";
 
-                if ($promotion_price > 0) {
-                    echo "<td><del>RM{$price}</del> -> RM{$promotion_price}</td>";
-                } else {
-                    echo "<td>RM{$price}</td>";
-                }
-
-                echo "<td>{$manufacture_date}</td>";
-                echo "<td>{$expired_date}</td>";
-                echo "<td>{$created}</td>";
                 echo "<td>";
                 // read one record
-                echo "<a href='product_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";
+                echo "<a href='orderDetails_readOne.php?order_ID={$order_ID}' class='btn btn-info m-r-1em'>Read</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
+                echo "<a href='update.php?order_ID={$order_ID}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$id});'  class='btn btn-danger'>Delete</a>";
+                echo "<a href='#' onclick='delete_user({$order_ID});'  class='btn btn-danger'>Delete</a>";
                 echo "</td>";
                 echo "</tr>";
             }
