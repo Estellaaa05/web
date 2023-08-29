@@ -69,8 +69,6 @@ if (!isset($_SESSION["login"])) {
         <?php
         if ($_POST) {
             try {
-                $username = strip_tags($_POST['username']);
-                $email = strip_tags($_POST['email']);
                 $old_password = isset($_POST['old_password']) ? strip_tags($_POST['old_password']) : '';
                 $new_password = isset($_POST['new_password']) ? strip_tags($_POST['new_password']) : '';
                 ;
@@ -82,18 +80,6 @@ if (!isset($_SESSION["login"])) {
                 $account_status = isset($_POST['account_status']) ? $_POST['account_status'] : '';
 
                 $flag = true;
-                if (empty($username)) {
-                    $usernameEr = "Please fill in your username.";
-                    $flag = false;
-                }
-
-                if (empty($email)) {
-                    $emailEr = "Please fill in your email.";
-                    $flag = false;
-                } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $emailEr = "Please fill in a valid email.";
-                    $flag = false;
-                }
 
                 if (!empty($old_password) || !empty($new_password) || !empty($confirm_password)) {
                     if (empty($old_password)) {
@@ -151,18 +137,16 @@ if (!isset($_SESSION["login"])) {
 
                 if ($flag) {
                     if (!empty($new_password)) {
-                        $query = "UPDATE customers SET username=:username, email=:email, password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
+                        $query = "UPDATE customers SET password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
                         $stmt = $con->prepare($query);
                         $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
                         $stmt->bindParam(':password', $password_hash);
                     } else {
-                        $query = "UPDATE customers SET username=:username, email=:email, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
+                        $query = "UPDATE customers SET first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
                         $stmt = $con->prepare($query);
                     }
 
                     $stmt->bindParam(':ID', $ID);
-                    $stmt->bindParam(':username', $username);
-                    $stmt->bindParam(':email', $email);
                     $stmt->bindParam(':first_name', $first_name);
                     $stmt->bindParam(':last_name', $last_name);
                     $stmt->bindParam(':gender', $gender);
@@ -187,24 +171,6 @@ if (!isset($_SESSION["login"])) {
         <!--we have our html form here where new record information can be updated-->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?ID={$ID}"); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <td>Username</td>
-                    <td><input type='text' name='username' class='form-control'
-                            value="<?php echo htmlspecialchars($username, ENT_QUOTES); ?>" />
-                        <div class='text-danger'>
-                            <?php echo $usernameEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Email</td>
-                    <td><input type='text' name='email' class='form-control'
-                            value="<?php echo htmlspecialchars($email, ENT_QUOTES); ?>" />
-                        <div class='text-danger'>
-                            <?php echo $emailEr; ?>
-                        </div>
-                    </td>
-                </tr>
                 <tr>
                     <td>First Name</td>
                     <td><input type='text' name='first_name' class='form-control'

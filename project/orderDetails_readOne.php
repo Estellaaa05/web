@@ -15,6 +15,11 @@ if (!isset($_SESSION["login"])) {
     <title>Read Orders</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        .price {
+            text-align: right;
+        }
+    </style>
 </head>
 
 <body>
@@ -68,7 +73,6 @@ if (!isset($_SESSION["login"])) {
             if ($num > 0) {
 
                 echo "<table class='table table-hover table-responsive table-bordered'><tr>";
-                echo "<th>OrderDetail ID</th>";
                 echo "<th>Product ID</th>";
                 echo "<th>Product Name</th>";
                 echo "<th>Product Price</th>";
@@ -78,12 +82,11 @@ if (!isset($_SESSION["login"])) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     extract($row);
 
-                    echo "<tr><td>{$orderDetail_ID}</td>";
-                    echo "<td>{$product_ID}</td>";
+                    echo "<tr><td>{$product_ID}</td>";
                     echo "<td>{$product_name}</td>";
                     echo "<td>" . (($promotion_price > 0) ? "<del>RM{$price}</del> -> RM{$promotion_price}" : "RM{$price}") . "</td>";
                     echo "<td> x {$quantity}</td>";
-                    echo "<td>RM{$subtotal_price}</td></tr>";
+                    echo "<td><div class=price>RM{$subtotal_price}</td></div></tr>";
                 }
             } else {
                 echo "<div class='alert alert-danger'>No records found.</div>";
@@ -95,9 +98,9 @@ if (!isset($_SESSION["login"])) {
         ?>
 
         <tr>
-            <td colspan=5></td>
+            <td colspan=4></td>
             <td>
-                <?php echo "RM" . htmlspecialchars($total_price, ENT_QUOTES); ?>
+                <?php echo "<div class=price>" . "RM" . htmlspecialchars($total_price, ENT_QUOTES) . "</div>"; ?>
             </td>
         </tr>
         <tr>
