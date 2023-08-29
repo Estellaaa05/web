@@ -37,7 +37,9 @@ if (!isset($_SESSION["login"])) {
         include 'config/database.php';
 
         try {
-            $IDquery = "SELECT order_ID, order_date FROM order_summary WHERE order_ID = ?";
+            $IDquery = "SELECT order_ID, order_date, customer_ID, c.username, c.first_name, c.last_name FROM order_summary os
+            LEFT JOIN customers c ON c.ID = os.customer_ID 
+            WHERE order_ID = ?";
 
             $query = "SELECT orderDetail_ID, product_ID, name AS product_name, price, promotion_price, quantity, subtotal_price, total_price FROM order_details od 
             LEFT JOIN order_summary os ON od.order_ID = os.order_ID 
@@ -66,6 +68,12 @@ if (!isset($_SESSION["login"])) {
                 echo "</tr><tr>";
                 echo "<th>Order Date</th>";
                 echo "<td colspan=5>{$order_date}</td>";
+                echo "</tr><tr>";
+                echo "<th>Customer ID</th>";
+                echo "<td colspan=5>{$customer_ID}</td>";
+                echo "</tr><tr>";
+                echo "<th>Customer Name</th>";
+                echo "<td colspan=5>{$first_name} {$last_name} ({$username})</td>";
                 echo "</tr>";
                 echo "</table>";
             }
@@ -75,18 +83,18 @@ if (!isset($_SESSION["login"])) {
                 echo "<table class='table table-hover table-responsive table-bordered'><tr>";
                 echo "<th>Product ID</th>";
                 echo "<th>Product Name</th>";
-                echo "<th>Product Price</th>";
+                echo "<th>Single Price (RM)</th>";
                 echo "<th>Quantity</th>";
-                echo "<th>Total Price</th></tr>";
+                echo "<th>Total Price (RM)</th></tr>";
 
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     extract($row);
 
                     echo "<tr><td>{$product_ID}</td>";
                     echo "<td>{$product_name}</td>";
-                    echo "<td>" . (($promotion_price > 0) ? "<del>RM{$price}</del> -> RM{$promotion_price}" : "RM{$price}") . "</td>";
+                    echo "<td>" . (($promotion_price > 0) ? "<del>{$price}</del> -> {$promotion_price}" : "{$price}") . "</td>";
                     echo "<td> x {$quantity}</td>";
-                    echo "<td><div class=price>RM{$subtotal_price}</td></div></tr>";
+                    echo "<td><div class=price>{$subtotal_price}</td></div></tr>";
                 }
             } else {
                 echo "<div class='alert alert-danger'>No records found.</div>";
@@ -100,7 +108,7 @@ if (!isset($_SESSION["login"])) {
         <tr>
             <td colspan=4></td>
             <td>
-                <?php echo "<div class=price>" . "RM" . htmlspecialchars($total_price, ENT_QUOTES) . "</div>"; ?>
+                <?php echo "<div class=price>" . htmlspecialchars($total_price, ENT_QUOTES) . "</div>"; ?>
             </td>
         </tr>
         <tr>

@@ -47,6 +47,7 @@ if (!isset($_SESSION["login"])) {
                 $promotion_price = strip_tags($_POST['promotion_price']);
                 $manufacture_date = $_POST['manufacture_date'];
                 $expired_date = $_POST['expired_date'];
+                $created = date('Y-m-d H:i:s');
 
                 $flag = true;
                 if (empty($name)) {
@@ -86,6 +87,9 @@ if (!isset($_SESSION["login"])) {
                 if (empty($manufacture_date)) {
                     $manufactureEr = "Please select the manucfacture date.";
                     $flag = false;
+                } else if (strtotime($manufacture_date) > strtotime($created)) {
+                    $manufactureEr = "Please select a valid manufacture date.";
+                    $flag = false;
                 }
 
                 if (empty($expired_date)) {
@@ -112,7 +116,6 @@ if (!isset($_SESSION["login"])) {
                     $stmt->bindParam(':manufacture_date', $manufacture_date);
                     $stmt->bindParam(':expired_date', $expired_date);
                     // specify when this record was inserted to the database
-                    $created = date('Y-m-d H:i:s');
                     $stmt->bindParam(':created', $created);
 
                     if ($stmt->execute()) {

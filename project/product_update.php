@@ -44,7 +44,7 @@ if (!isset($_SESSION["login"])) {
 
         try {
 
-            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date FROM products WHERE id = ? LIMIT 0,1";
+            $query = "SELECT id, name, category_ID, description, price, promotion_price, manufacture_date, expired_date, created FROM products WHERE id = ? LIMIT 0,1";
 
             $stmt = $con->prepare($query);
 
@@ -65,6 +65,7 @@ if (!isset($_SESSION["login"])) {
             $promotion_price = $row['promotion_price'];
             $manufacture_date = $row['manufacture_date'];
             $expired_date = $row['expired_date'];
+            $created = $row['created'];
         }
 
         // show error
@@ -118,6 +119,11 @@ if (!isset($_SESSION["login"])) {
                     }
                 } else {
                     $promotion_price = 0;
+                }
+
+                if (strtotime($manufacture_date) > strtotime($created)) {
+                    $manufactureEr = "Please select a valid manufacture date.";
+                    $flag = false;
                 }
 
                 if (strtotime($expired_date) < strtotime($manufacture_date)) {

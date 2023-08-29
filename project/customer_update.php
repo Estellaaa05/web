@@ -40,8 +40,7 @@ if (!isset($_SESSION["login"])) {
         include 'config/database.php';
 
         try {
-
-            $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, account_status FROM customers WHERE ID = ? LIMIT 0,1";
+            $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, registration_date_time, account_status FROM customers WHERE ID = ? LIMIT 0,1";
 
             $stmt = $con->prepare($query);
 
@@ -58,6 +57,7 @@ if (!isset($_SESSION["login"])) {
             $last_name = $row['last_name'];
             $gender = $row['gender'];
             $date_of_birth = $row['date_of_birth'];
+            $registration_date_time = $row['registration_date_time'];
             $account_status = $row['account_status'];
         }
 
@@ -127,6 +127,9 @@ if (!isset($_SESSION["login"])) {
 
                 if (empty($date_of_birth)) {
                     $date_of_birthEr = "Please select your date of birth.";
+                    $flag = false;
+                } else if (strtotime($date_of_birth) > strtotime($registration_date_time)) {
+                    $date_of_birthEr = "Please select a valid date of birth.";
                     $flag = false;
                 }
 

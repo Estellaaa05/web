@@ -101,6 +101,9 @@ if (!isset($_SESSION["login"])) {
                 if (empty($date_of_birth)) {
                     $date_of_birthEr = "Please select your date of birth.";
                     $flag = false;
+                } else if (strtotime($date_of_birth) > strtotime($registration_date_time)) {
+                    $date_of_birthEr = "Please select a valid date of birth.";
+                    $flag = false;
                 }
 
                 if (empty($account_status)) {

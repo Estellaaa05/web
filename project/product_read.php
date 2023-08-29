@@ -39,7 +39,7 @@ if (!isset($_SESSION["login"])) {
         <?php
         // include database connection
         include 'config/database.php';
-        $query = "SELECT id, name, p.category_ID, c.category_name, description, price, promotion_price, manufacture_date, expired_date, created FROM products p
+        $query = "SELECT id, name, p.category_ID, c.category_name, price, promotion_price, created FROM products p
         LEFT JOIN product_categories c ON p.category_ID = c.category_ID ORDER BY id ASC";
 
         if ($_GET) {
@@ -49,7 +49,7 @@ if (!isset($_SESSION["login"])) {
                 echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
             }
 
-            $query = "SELECT id, name, p.category_ID, c.category_name, description, price, promotion_price, manufacture_date, expired_date, created FROM products p
+            $query = "SELECT id, name, p.category_ID, c.category_name, price, promotion_price, created FROM products p
             LEFT JOIN product_categories c ON p.category_ID = c.category_ID WHERE name LIKE '%$search%' ORDER BY id ASC";
         }
 
@@ -68,10 +68,7 @@ if (!isset($_SESSION["login"])) {
             echo "<th>ID</th>";
             echo "<th>Name</th>";
             echo "<th>Category</th>";
-            echo "<th>Description</th>";
             echo "<th>Price</th>";
-            echo "<th>Manufacture Date</th>";
-            echo "<th>Expired Date</th>";
             echo "<th>Created</th>";
             echo "<th>Action</th>";
             echo "</tr>";
@@ -86,7 +83,6 @@ if (!isset($_SESSION["login"])) {
                 echo "<td>{$id}</td>"; //curly brace:substitute the values of the corresponding variables
                 echo "<td>{$name}</td>";
                 echo "<td>{$category_ID} - {$category_name}</td>";
-                echo "<td>{$description}</td>";
 
                 if ($promotion_price > 0) {
                     echo "<td><del>RM{$price}</del> -> RM{$promotion_price}</td>";
@@ -94,8 +90,6 @@ if (!isset($_SESSION["login"])) {
                     echo "<td>RM{$price}</td>";
                 }
 
-                echo "<td>{$manufacture_date}</td>";
-                echo "<td>{$expired_date}</td>";
                 echo "<td>{$created}</td>";
                 echo "<td>";
                 // read one record
