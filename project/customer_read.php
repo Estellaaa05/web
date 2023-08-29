@@ -40,7 +40,7 @@ if (!isset($_SESSION["login"])) {
         // include database connection
         include 'config/database.php';
 
-        $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers ORDER BY ID ASC";
+        $query = "SELECT ID, username, email, password, first_name, last_name, account_status, registration_date_time FROM customers ORDER BY ID ASC";
 
         if ($_GET) {
             $search = $_GET['search'];
@@ -49,7 +49,7 @@ if (!isset($_SESSION["login"])) {
                 echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
             }
 
-            $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
+            $query = "SELECT ID, username, email, password, first_name, last_name, account_status, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR CONCAT(first_name, ' ', last_name) LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
         }
 
         $stmt = $con->prepare($query);
@@ -71,8 +71,6 @@ if (!isset($_SESSION["login"])) {
             echo "<th>Email</th>";
             //echo "<th>Password</th>";
             echo "<th>Name</th>";
-            echo "<th>Gender</th>";
-            echo "<th>Date Of Birth</th>";
             echo "<th>Account Status</th>";
             echo "<th>Registration Datetime</th>";
             echo "<th>Action</th>";
@@ -93,8 +91,6 @@ if (!isset($_SESSION["login"])) {
                 echo "<td>{$email}</td>";
                 //echo "<td>{$password}</td>";
                 echo "<td>{$first_name} {$last_name}</td>";
-                echo "<td>{$gender}</td>";
-                echo "<td>{$date_of_birth}</td>";
                 echo "<td>{$account_status}</td>";
                 echo "<td>{$registration_date_time}</td>";
                 echo "<td>";
