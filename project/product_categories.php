@@ -95,7 +95,7 @@ if (!isset($_SESSION["login"])) {
                     <td></td>
                     <td>
                         <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='product_create.php' class='btn btn-danger'>Create Product</a>
+                        <a href='product_create.php' class='btn btn-danger'>Create New Product</a>
                     </td>
                 </tr>
             </table>

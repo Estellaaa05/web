@@ -36,6 +36,10 @@
                     </li>
 
                     <li class="nav-item">
+                        <a class="nav-link" href="product_categories.php">Categories</a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link" href="customer_read.php">Customers</a>
                     </li>
                 </ul>
