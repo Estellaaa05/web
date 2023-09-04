@@ -39,7 +39,7 @@ if (!isset($_SESSION["login"])) {
         <?php
         // include database connection
         include 'config/database.php';
-        $query = "SELECT id, name, p.category_ID, c.category_name, price, promotion_price, created FROM products p
+        $query = "SELECT id, name, product_image, p.category_ID, c.category_name, price, promotion_price, product_image, created FROM products p
         LEFT JOIN product_categories c ON p.category_ID = c.category_ID ORDER BY id ASC";
 
         if ($_GET) {
@@ -49,7 +49,7 @@ if (!isset($_SESSION["login"])) {
                 echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
             }
 
-            $query = "SELECT id, name, p.category_ID, c.category_name, price, promotion_price, created FROM products p
+            $query = "SELECT id, name, product_image, p.category_ID, c.category_name, price, promotion_price, product_image, created FROM products p
             LEFT JOIN product_categories c ON p.category_ID = c.category_ID WHERE name LIKE '%$search%' ORDER BY id ASC";
         }
 
@@ -68,7 +68,7 @@ if (!isset($_SESSION["login"])) {
             echo "<th>ID</th>";
             echo "<th>Name</th>";
             echo "<th>Category</th>";
-            echo "<th>Price</th>";
+            echo "<th>Single Price</th>";
             echo "<th>Created</th>";
             echo "<th>Action</th>";
             echo "</tr>";
@@ -81,7 +81,8 @@ if (!isset($_SESSION["login"])) {
                 // creating new table row per record
                 echo "<tr>";
                 echo "<td>{$id}</td>"; //curly brace:substitute the values of the corresponding variables
-                echo "<td>{$name}</td>";
+                $imageSource = !empty($product_image) ? 'http://localhost/web/project/product_uploads/' . $product_image : 'http://localhost/web/project/img/default_product_photo.jpg';
+                echo "<td>{$name}<br><img src={$imageSource} width=100px height=100px></td>";
                 echo "<td>{$category_ID} - {$category_name}</td>";
 
                 if ($promotion_price > 0) {

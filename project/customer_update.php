@@ -33,14 +33,14 @@ if (!isset($_SESSION["login"])) {
         </div>
         <?php
 
-        $usernameEr = $emailEr = $old_passwordEr = $new_passwordEr = $confirm_passwordEr = $first_nameEr = $last_nameEr = $genderEr = $date_of_birthEr = $account_statusEr = "";
+        $usernameEr = $emailEr = $old_passwordEr = $new_passwordEr = $confirm_passwordEr = $first_nameEr = $last_nameEr = $genderEr = $date_of_birthEr = $account_statusEr = $file_upload_error_messages = "";
 
         $ID = isset($_GET['ID']) ? $_GET['ID'] : die('ERROR: Record ID not found.');
 
         include 'config/database.php';
 
         try {
-            $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, registration_date_time, account_status FROM customers WHERE ID = ? LIMIT 0,1";
+            $query = "SELECT ID, username, email, password, first_name, last_name, gender, date_of_birth, registration_date_time, account_status, customer_image FROM customers WHERE ID = ? LIMIT 0,1";
 
             $stmt = $con->prepare($query);
 
@@ -51,6 +51,7 @@ if (!isset($_SESSION["login"])) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $username = $row['username'];
+            $previousImage = $row['customer_image'];
             $email = $row['email'];
             $password_hash = $row['password'];
             $first_name = $row['first_name'];
@@ -78,6 +79,10 @@ if (!isset($_SESSION["login"])) {
                 $gender = isset($_POST['gender']) ? $_POST['gender'] : '';
                 $date_of_birth = $_POST['date_of_birth'];
                 $account_status = isset($_POST['account_status']) ? $_POST['account_status'] : '';
+
+                $customer_image = !empty($_FILES["customer_image"]["name"])
+                    ? sha1_file($_FILES['customer_image']['tmp_name']) . "-" . str_replace(" ", "_", basename($_FILES["customer_image"]["name"])) : "";
+                $customer_image = strip_tags($customer_image);
 
                 $flag = true;
 
@@ -138,29 +143,105 @@ if (!isset($_SESSION["login"])) {
                     $flag = false;
                 }
 
-                if ($flag) {
-                    if (!empty($new_password)) {
-                        $query = "UPDATE customers SET password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
-                        $stmt = $con->prepare($query);
-                        $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-                        $stmt->bindParam(':password', $password_hash);
+                //image validation
+                if ($customer_image) {
+                    // upload to file to folder
+                    $target_directory = "customer_uploads/";
+                    $target_file = $target_directory . $customer_image;
+                    $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+
+                    $allowed_file_types = array("jpg", "jpeg", "png", "gif");
+                    if (!in_array($file_type, $allowed_file_types)) {
+                        $file_upload_error_messages .= "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                        $flag = false;
                     } else {
-                        $query = "UPDATE customers SET first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
-                        $stmt = $con->prepare($query);
+                        $check = list($width, $height, $type, $attr) = getimagesize($_FILES["customer_image"]["tmp_name"]);
+                        if ($check !== false) {
+                            // submitted file is an image
+                            if ($width !== $height) {
+                                $file_upload_error_messages .= "<div>Image is not a square size.</div>";
+                                $flag = false;
+                            }
+                            // make sure submitted file is not too large, can't be larger than 512KB
+                            if ($_FILES['customer_image']['size'] > 512 * 1024) {
+                                $file_upload_error_messages .= "<div>Image must be less than 512 KB in size.</div>";
+                                $flag = false;
+                            }
+
+                            if (file_exists($target_file)) {
+                                $file_upload_error_messages = "<div>Image already exists. Try to change file name.</div>";
+                                $flag = false;
+                            }
+                        } else {
+                            $file_upload_error_messages .= "<div>Submitted file is not an image.</div>";
+                            $flag = false;
+                        }
                     }
 
-                    $stmt->bindParam(':ID', $ID);
-                    $stmt->bindParam(':first_name', $first_name);
-                    $stmt->bindParam(':last_name', $last_name);
-                    $stmt->bindParam(':gender', $gender);
-                    $stmt->bindParam(':date_of_birth', $date_of_birth);
-                    $stmt->bindParam(':account_status', $account_status);
+                    // make sure the 'uploads' folder exists
+                    // if not, create it
+                    if (!is_dir($target_directory)) {
+                        mkdir($target_directory, 0777, true);
+                    }
+                }
 
-                    if ($stmt->execute()) {
-                        echo "<div class='alert alert-success'>Record was updated.</div>";
-                        $old_password = $new_password = '';
-                    } else {
-                        echo "<div class='alert alert-danger'>Unable to update record. Please try again.</div>";
+                if ($flag) {
+                    $submitFlag = true;
+                    // if $file_upload_error_messages is still empty
+                    if ($customer_image) {
+
+                        if (!empty($previousImage)) {
+                            $previousImagePath = "customer_uploads/" . $previousImage;
+                            if (file_exists($previousImagePath)) {
+                                unlink($previousImagePath);
+                            }
+                        }
+
+                        if (empty($file_upload_error_messages)) {
+                            // it means there are no errors, so try to upload the file
+                            if (move_uploaded_file($_FILES["customer_image"]["tmp_name"], $target_file)) {
+                                // it means photo was uploaded
+                            } else {
+                                $submitFlag = false;
+                                $file_upload_error_messages .= "<div>Image upload failed.</div>";
+                            }
+                        }
+                    }
+
+                    if ($submitFlag) {
+                        if ($customer_image && !empty($new_password)) {
+                            $query = "UPDATE customers SET password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status,customer_image=:customer_image WHERE ID = :ID";
+                            $stmt = $con->prepare($query);
+                            $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+                            $stmt->bindParam(':password', $password_hash);
+                            $stmt->bindParam(':customer_image', $customer_image);
+                        } else if (!empty($new_password)) {
+                            $query = "UPDATE customers SET password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
+                            $stmt = $con->prepare($query);
+                            $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+                            $stmt->bindParam(':password', $password_hash);
+                        } else if ($customer_image) {
+                            $query = "UPDATE customers SET first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status,customer_image=:customer_image WHERE ID = :ID";
+                            $stmt = $con->prepare($query);
+                            $stmt->bindParam(':customer_image', $customer_image);
+                        } else {
+                            $query = "UPDATE customers SET first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
+                            $stmt = $con->prepare($query);
+                        }
+
+                        $stmt->bindParam(':ID', $ID);
+                        $stmt->bindParam(':first_name', $first_name);
+                        $stmt->bindParam(':last_name', $last_name);
+                        $stmt->bindParam(':gender', $gender);
+                        $stmt->bindParam(':date_of_birth', $date_of_birth);
+                        $stmt->bindParam(':account_status', $account_status);
+
+                        if ($stmt->execute()) {
+                            echo "<div class='alert alert-success'>Record was updated.</div>";
+                            $old_password = $new_password = '';
+                        } else {
+                            echo "<div class='alert alert-danger'>Unable to update record. Please try again.</div>";
+                        }
                     }
                 }
             }
@@ -172,7 +253,8 @@ if (!isset($_SESSION["login"])) {
         ?>
 
         <!--we have our html form here where new record information can be updated-->
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?ID={$ID}"); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?ID={$ID}"); ?>" method="post"
+            enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>First Name</td>
@@ -265,6 +347,21 @@ if (!isset($_SESSION["login"])) {
                         </div>
                     </td>
                 </tr>
+
+                <tr>
+                    <td class="bg-color" colspan=2>
+                        Change Profile Picture (Optional)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Profile Picture</td>
+                    <td><input type="file" name="customer_image" />
+                        <div class='text-danger'>
+                            <?php echo $file_upload_error_messages; ?>
+                        </div>
+                    </td>
+                </tr>
+
                 <tr>
                     <td></td>
                     <td>

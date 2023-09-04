@@ -39,7 +39,7 @@ if (!isset($_SESSION["login"])) {
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, p.category_ID, c.category_name, description, price, promotion_price, manufacture_date, expired_date, created FROM products p 
+            $query = "SELECT id, name, product_image, p.category_ID, c.category_name, description, price, promotion_price, manufacture_date, expired_date, created FROM products p 
             LEFT JOIN product_categories c ON p.category_ID = c.category_ID WHERE id = ?";
             $stmt = $con->prepare($query);
 
@@ -55,6 +55,7 @@ if (!isset($_SESSION["login"])) {
             // values to fill up our form
             // extract($row);
             $name = $row['name'];
+            $product_image = $row['product_image'];
             $category_ID = $row['category_ID'];
             $category_name = $row['category_name'];
             $description = $row['description'];
@@ -77,8 +78,10 @@ if (!isset($_SESSION["login"])) {
             <tr>
                 <td>Name</td>
                 <td>
-                    <?php echo htmlspecialchars($name, ENT_QUOTES); ?>
-                    <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
+                    <?php echo htmlspecialchars($name, ENT_QUOTES);
+                    $imageSource = !empty($product_image) ? 'http://localhost/web/project/product_uploads/' . $product_image :
+                        'http://localhost/web/project/img/default_product_photo.jpg';
+                    echo "<br><img src={$imageSource} width=100px height=100px>"; ?>
                 </td>
             </tr>
             <tr>

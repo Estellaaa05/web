@@ -40,7 +40,7 @@ if (!isset($_SESSION["login"])) {
         // include database connection
         include 'config/database.php';
 
-        $query = "SELECT ID, username, email, password, first_name, last_name, account_status, registration_date_time FROM customers ORDER BY ID ASC";
+        $query = "SELECT ID, username, email, password, first_name, last_name, account_status, customer_image, registration_date_time FROM customers ORDER BY ID ASC";
 
         if ($_GET) {
             $search = $_GET['search'];
@@ -49,7 +49,7 @@ if (!isset($_SESSION["login"])) {
                 echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
             }
 
-            $query = "SELECT ID, username, email, password, first_name, last_name, account_status, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR CONCAT(first_name, ' ', last_name) LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
+            $query = "SELECT ID, username, email, password, first_name, last_name, account_status, customer_image, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR CONCAT(first_name, ' ', last_name) LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
         }
 
         $stmt = $con->prepare($query);
@@ -87,7 +87,8 @@ if (!isset($_SESSION["login"])) {
                 // creating new table row per record
                 echo "<tr>";
                 echo "<td>{$ID}</td>";
-                echo "<td>{$username}</td>"; //curly brace:substitute the values of the corresponding variables
+                $imageSource = !empty($customer_image) ? 'http://localhost/web/project/customer_uploads/' . $customer_image : 'http://localhost/web/project/img/default_profile_photo.jpg';
+                echo "<td>{$username}<br><img src={$imageSource} width=100px height=100px></td>"; //curly brace:substitute the values of the corresponding variables
                 echo "<td>{$email}</td>";
                 //echo "<td>{$password}</td>";
                 echo "<td>{$first_name} {$last_name}</td>";

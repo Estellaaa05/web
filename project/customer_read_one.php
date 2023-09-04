@@ -39,7 +39,7 @@ if (!isset($_SESSION["login"])) {
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT ID,username, email, password, first_name, last_name, gender, date_of_birth, account_status, registration_date_time FROM customers WHERE ID = ?";
+            $query = "SELECT ID,username, email, password, first_name, last_name, gender, date_of_birth, account_status, customer_image, registration_date_time FROM customers WHERE ID = ?";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -61,6 +61,7 @@ if (!isset($_SESSION["login"])) {
             $gender = $row['gender'];
             $date_of_birth = $row['date_of_birth'];
             $account_status = $row['account_status'];
+            $customer_image = $row['customer_image'];
             $registration_date_time = $row['registration_date_time'];
         }
 
@@ -83,7 +84,10 @@ if (!isset($_SESSION["login"])) {
             <tr>
                 <td>Username</td>
                 <td>
-                    <?php echo htmlspecialchars($username, ENT_QUOTES); ?>
+                    <?php echo htmlspecialchars($username, ENT_QUOTES);
+                    $imageSource = !empty($customer_image) ? 'http://localhost/web/project/customer_uploads/' . $customer_image :
+                        'http://localhost/web/project/img/default_profile_photo.jpg';
+                    echo "<br><img src={$imageSource} width=100px height=100px>"; ?>
                 </td>
             </tr>
             <tr>
