@@ -83,7 +83,7 @@ if (!isset($_SESSION["login"])) {
                 $price = strip_tags($_POST['price']);
                 $promotion_price = strip_tags($_POST['promotion_price']);
                 $manufacture_date = $_POST['manufacture_date'];
-                $expired_date = $_POST['expired_date'];
+                $expired_date = !empty($_POST['expired_date']) ? $_POST['expired_date'] : NULL;
 
                 $product_image = !empty($_FILES["product_image"]["name"])
                     ? sha1_file($_FILES['product_image']['tmp_name']) . "-" . str_replace(" ", "_", basename($_FILES["product_image"]["name"])) : "";
@@ -124,14 +124,19 @@ if (!isset($_SESSION["login"])) {
                     $promotion_price = 0;
                 }
 
-                if (strtotime($manufacture_date) > strtotime($created)) {
+                if (empty($manufacture_date)) {
+                    $manufactureEr = "Please select the manucfacture date.";
+                    $flag = false;
+                } else if (strtotime($manufacture_date) > strtotime($created)) {
                     $manufactureEr = "Please select a valid manufacture date.";
                     $flag = false;
                 }
 
-                if (strtotime($expired_date) < strtotime($manufacture_date)) {
-                    $expiredEr = "Expired date must be later than manufacture date.";
-                    $flag = false;
+                if (!empty($expired_date)) {
+                    if (strtotime($expired_date) < strtotime($manufacture_date)) {
+                        $expiredEr = "Expired date must be later than manufacture date.";
+                        $flag = false;
+                    }
                 }
 
                 //image validation
@@ -174,17 +179,33 @@ if (!isset($_SESSION["login"])) {
                     if (!is_dir($target_directory)) {
                         mkdir($target_directory, 0777, true);
                     }
+                } else {
+                    $target_file = NULL;
                 }
 
                 if ($flag) {
                     $submitFlag = true;
+
+                    if (isset($_POST['remove_photo']) && $_POST['remove_photo'] == 1) {
+                        if (file_exists($previousImage)) {
+                            if (unlink($previousImage)) {
+                                //previousImage deleted successfully
+                            } else {
+                                echo "Failed to delete the previous image.";
+                                $submitFlag = false;
+                            }
+                        }
+                    }
+
                     // if $file_upload_error_messages is still empty
                     if ($product_image) {
 
-                        if (!empty($previousImage)) {
-                            $previousImagePath = "uploads/" . $previousImage;
-                            if (file_exists($previousImagePath)) {
-                                unlink($previousImagePath);
+                        if (file_exists($previousImage)) {
+                            if (unlink($previousImage)) {
+                                //previousImage deleted successfully
+                            } else {
+                                echo "Failed to delete the previous image.";
+                                $submitFlag = false;
                             }
                         }
 
@@ -200,14 +221,8 @@ if (!isset($_SESSION["login"])) {
                     }
 
                     if ($submitFlag) {
-                        if ($product_image) {
-                            $query = "UPDATE products SET name=:name, category_ID=:category_ID, description=:description, price=:price, promotion_price=:promotion_price, manufacture_date=:manufacture_date, expired_date=:expired_date, product_image=:product_image WHERE id = :id";
-                            $stmt = $con->prepare($query);
-                            $stmt->bindParam(':product_image', $product_image);
-                        } else {
-                            $query = "UPDATE products SET name=:name, category_ID=:category_ID, description=:description, price=:price, promotion_price=:promotion_price, manufacture_date=:manufacture_date, expired_date=:expired_date WHERE id = :id";
-                            $stmt = $con->prepare($query);
-                        }
+                        $query = "UPDATE products SET name=:name, category_ID=:category_ID, description=:description, price=:price, promotion_price=:promotion_price, manufacture_date=:manufacture_date, expired_date=:expired_date, product_image=:product_image WHERE id = :id";
+                        $stmt = $con->prepare($query);
 
                         $stmt->bindParam(':id', $id);
                         $stmt->bindParam(':name', $name);
@@ -217,9 +232,11 @@ if (!isset($_SESSION["login"])) {
                         $stmt->bindParam(':promotion_price', $promotion_price);
                         $stmt->bindParam(':manufacture_date', $manufacture_date);
                         $stmt->bindParam(':expired_date', $expired_date);
+                        $stmt->bindParam(':product_image', $target_file);
 
                         if ($stmt->execute()) {
                             echo "<div class='alert alert-success'>Record was updated.</div>";
+                            $previousImage = '';
                         } else {
                             echo "<div class='alert alert-danger'>Unable to update record. Please try again.</div>";
                         }
@@ -314,7 +331,19 @@ if (!isset($_SESSION["login"])) {
                 </tr>
                 <tr>
                     <td>Product Photo (Optional)</td>
-                    <td><input type="file" name="product_image" />
+                    <td>
+                        <?php
+                        $imageSource = !empty($product_image) ? $target_file : $previousImage;
+
+                        if (!empty($previousImage) || !empty($product_image)) {
+                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" />Remove Photo</label>
+                        <br>';
+                        }
+
+                        $image = (!empty($previousImage) || !empty($product_image)) ? "<img src={$imageSource} width=100px height=100px/><br>" : '';
+                        echo $image;
+                        ?>
+                        <input type="file" name="product_image" />
                         <div class='text-danger'>
                             <?php echo $file_upload_error_messages; ?>
                         </div>

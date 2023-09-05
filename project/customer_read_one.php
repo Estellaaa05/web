@@ -85,7 +85,7 @@ if (!isset($_SESSION["login"])) {
                 <td>Username</td>
                 <td>
                     <?php echo htmlspecialchars($username, ENT_QUOTES);
-                    $imageSource = !empty($customer_image) ? 'http://localhost/web/project/customer_uploads/' . $customer_image :
+                    $imageSource = !empty($customer_image) ? $customer_image :
                         'http://localhost/web/project/img/default_profile_photo.jpg';
                     echo "<br><img src={$imageSource} width=100px height=100px>"; ?>
                 </td>
@@ -138,6 +138,7 @@ if (!isset($_SESSION["login"])) {
                 <td></td>
                 <td>
                     <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
+                    <?php echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a>"; ?>
                 </td>
             </tr>
         </table>

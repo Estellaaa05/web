@@ -46,7 +46,7 @@ if (!isset($_SESSION["login"])) {
                 $price = strip_tags($_POST['price']);
                 $promotion_price = strip_tags($_POST['promotion_price']);
                 $manufacture_date = $_POST['manufacture_date'];
-                $expired_date = $_POST['expired_date'];
+                $expired_date = !empty($_POST['expired_date']) ? $_POST['expired_date'] : NULL;
                 $created = date('Y-m-d H:i:s');
 
                 $product_image = !empty($_FILES["product_image"]["name"])
@@ -96,12 +96,11 @@ if (!isset($_SESSION["login"])) {
                     $flag = false;
                 }
 
-                if (empty($expired_date)) {
-                    $expiredEr = "Please select the expired date.";
-                    $flag = false;
-                } else if (strtotime($expired_date) < strtotime($manufacture_date)) {
-                    $expiredEr = "Expired date must be later than manufacture date.";
-                    $flag = false;
+                if (!empty($expired_date)) {
+                    if (strtotime($expired_date) < strtotime($manufacture_date)) {
+                        $expiredEr = "Expired date must be later than manufacture date.";
+                        $flag = false;
+                    }
                 }
 
                 //image validation
@@ -144,37 +143,37 @@ if (!isset($_SESSION["login"])) {
                     if (!is_dir($target_directory)) {
                         mkdir($target_directory, 0777, true);
                     }
+                } else {
+                    $target_file = NULL;
                 }
 
                 if ($flag) {
                     $submitFlag = true;
-                    // if $file_upload_error_messages is still empty
+                    $query = "INSERT INTO products SET name=:name, category_ID=:category_ID, description=:description, price=:price, promotion_price=:promotion_price, manufacture_date=:manufacture_date, expired_date=:expired_date, product_image=:product_image, created=:created";
+                    $stmt = $con->prepare($query);
+                    $stmt->bindParam(':name', $name);
+                    $stmt->bindParam(':category_ID', $submitted_category_ID);
+                    $stmt->bindParam(':description', $description);
+                    $stmt->bindParam(':price', $price);
+                    $stmt->bindParam(':promotion_price', $promotion_price);
+                    $stmt->bindParam(':manufacture_date', $manufacture_date);
+                    $stmt->bindParam(':expired_date', $expired_date);
+                    $stmt->bindParam(':product_image', $target_file);
+                    $stmt->bindParam(':created', $created);
+
                     if ($product_image) {
                         if (empty($file_upload_error_messages)) {
                             // it means there are no errors, so try to upload the file
                             if (move_uploaded_file($_FILES["product_image"]["tmp_name"], $target_file)) {
                                 // it means photo was uploaded
                             } else {
-                                $submitFlag = false;
                                 $file_upload_error_messages .= "<div>Image upload failed.</div>";
+                                $submitFlag = false;
                             }
                         }
                     }
 
                     if ($submitFlag) {
-                        $query = "INSERT INTO products SET name=:name, category_ID=:category_ID, description=:description, price=:price, promotion_price=:promotion_price, manufacture_date=:manufacture_date, expired_date=:expired_date, product_image=:product_image, created=:created";
-                        $stmt = $con->prepare($query);
-
-                        $stmt->bindParam(':name', $name);
-                        $stmt->bindParam(':category_ID', $submitted_category_ID);
-                        $stmt->bindParam(':description', $description);
-                        $stmt->bindParam(':price', $price);
-                        $stmt->bindParam(':promotion_price', $promotion_price);
-                        $stmt->bindParam(':manufacture_date', $manufacture_date);
-                        $stmt->bindParam(':expired_date', $expired_date);
-                        $stmt->bindParam(':product_image', $product_image);
-                        $stmt->bindParam(':created', $created);
-
                         if ($stmt->execute()) {
                             echo "<div class='alert alert-success'>Record was saved.</div>";
                             $name = $submitted_category_ID = $description = $price = $promotion_price = $manufacture_date = $expired_date = '';
@@ -184,6 +183,7 @@ if (!isset($_SESSION["login"])) {
                     }
                 }
             }
+
             // show error
             catch (PDOException $exception) {
                 die('ERROR: ' . $exception->getMessage());

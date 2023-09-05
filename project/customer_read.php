@@ -49,7 +49,7 @@ if (!isset($_SESSION["login"])) {
                 echo "<div class='alert alert-danger'>Please fill in keywords to search.</div>";
             }
 
-            $query = "SELECT ID, username, email, password, first_name, last_name, account_status, customer_image, registration_date_time FROM customers WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR CONCAT(first_name, ' ', last_name) LIKE '%$search%' OR username LIKE '%$search%' ORDER BY ID ASC";
+            $query = "SELECT ID, username, email, password, first_name, last_name, account_status, customer_image, registration_date_time FROM customers WHERE ID LIKE '%$search%' OR first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR CONCAT(first_name, ' ', last_name) LIKE '%$search%' OR username LIKE '%$search%' OR email LIKE '%$search%' OR account_status LIKE '%$search%' ORDER BY ID ASC";
         }
 
         $stmt = $con->prepare($query);
@@ -87,7 +87,7 @@ if (!isset($_SESSION["login"])) {
                 // creating new table row per record
                 echo "<tr>";
                 echo "<td>{$ID}</td>";
-                $imageSource = !empty($customer_image) ? 'http://localhost/web/project/customer_uploads/' . $customer_image : 'http://localhost/web/project/img/default_profile_photo.jpg';
+                $imageSource = !empty($customer_image) ? $customer_image : 'http://localhost/web/project/img/default_profile_photo.jpg';
                 echo "<td>{$username}<br><img src={$imageSource} width=100px height=100px></td>"; //curly brace:substitute the values of the corresponding variables
                 echo "<td>{$email}</td>";
                 //echo "<td>{$password}</td>";
@@ -96,10 +96,10 @@ if (!isset($_SESSION["login"])) {
                 echo "<td>{$registration_date_time}</td>";
                 echo "<td>";
                 // read one record
-                echo "<a href='customer_read_one.php?ID={$ID}' class='btn btn-info m-r-1em'>Read</a>";
+                echo "<a href='customer_read_one.php?ID={$ID}' class='btn btn-info m-r-1em'>Read</a> ";
 
                 // we will use this links on next part of this post
-                echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a>";
+                echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_user({$ID});'  class='btn btn-danger'>Delete</a>";

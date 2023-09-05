@@ -28,7 +28,7 @@ if (!isset($_SESSION["login"])) {
     ?>
     <div class="container">
         <div class="page-header">
-            <h1>Read Orders</h1>
+            <h1>Read Order</h1>
         </div>
 
         <?php

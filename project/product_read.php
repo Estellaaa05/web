@@ -50,7 +50,8 @@ if (!isset($_SESSION["login"])) {
             }
 
             $query = "SELECT id, name, product_image, p.category_ID, c.category_name, price, promotion_price, product_image, created FROM products p
-            LEFT JOIN product_categories c ON p.category_ID = c.category_ID WHERE name LIKE '%$search%' ORDER BY id ASC";
+            LEFT JOIN product_categories c ON p.category_ID = c.category_ID 
+            WHERE id LIKE '%$search%' OR name LIKE '%$search%' OR p.category_ID LIKE '%$search%' OR c.category_name LIKE '%$search%' ORDER BY id ASC";
         }
 
         $stmt = $con->prepare($query);
@@ -81,7 +82,7 @@ if (!isset($_SESSION["login"])) {
                 // creating new table row per record
                 echo "<tr>";
                 echo "<td>{$id}</td>"; //curly brace:substitute the values of the corresponding variables
-                $imageSource = !empty($product_image) ? 'http://localhost/web/project/product_uploads/' . $product_image : 'http://localhost/web/project/img/default_product_photo.jpg';
+                $imageSource = !empty($product_image) ? $product_image : 'http://localhost/web/project/img/default_product_photo.jpg';
                 echo "<td>{$name}<br><img src={$imageSource} width=100px height=100px></td>";
                 echo "<td>{$category_ID} - {$category_name}</td>";
 
@@ -94,10 +95,10 @@ if (!isset($_SESSION["login"])) {
                 echo "<td>{$created}</td>";
                 echo "<td>";
                 // read one record
-                echo "<a href='product_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";
+                echo "<a href='product_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a> ";
 
                 // we will use this links on next part of this post
-                echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
+                echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a> ";
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_user({$id});'  class='btn btn-danger'>Delete</a>";

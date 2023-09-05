@@ -151,11 +151,31 @@ if (!isset($_SESSION["login"])) {
                     if (!is_dir($target_directory)) {
                         mkdir($target_directory, 0777, true);
                     }
+                } else {
+                    $target_file = NULL;
                 }
 
                 if ($flag) {
                     $submitFlag = true;
                     // if $file_upload_error_messages is still empty
+        
+                    $query = "INSERT INTO customers SET username=:username, email=:email, password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status, customer_image=:customer_image, registration_date_time=:registration_date_time";
+                    $stmt = $con->prepare($query);
+
+                    //$password_rc = md5($password);
+                    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+                    $stmt->bindParam(':username', $username);
+                    $stmt->bindParam(':email', $email);
+                    $stmt->bindParam(':password', $password_hash);
+                    $stmt->bindParam(':first_name', $first_name);
+                    $stmt->bindParam(':last_name', $last_name);
+                    $stmt->bindParam(':gender', $gender);
+                    $stmt->bindParam(':date_of_birth', $date_of_birth);
+                    $stmt->bindParam(':account_status', $account_status);
+                    $stmt->bindParam(':customer_image', $target_file);
+                    $stmt->bindParam(':registration_date_time', $registration_date_time);
+
                     if ($customer_image) {
                         if (empty($file_upload_error_messages)) {
                             // it means there are no errors, so try to upload the file
@@ -169,23 +189,6 @@ if (!isset($_SESSION["login"])) {
                     }
 
                     if ($submitFlag) {
-                        $query = "INSERT INTO customers SET username=:username, email=:email, password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status, customer_image=:customer_image, registration_date_time=:registration_date_time";
-                        $stmt = $con->prepare($query);
-
-                        //$password_rc = md5($password);
-                        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-                        $stmt->bindParam(':username', $username);
-                        $stmt->bindParam(':email', $email);
-                        $stmt->bindParam(':password', $password_hash);
-                        $stmt->bindParam(':first_name', $first_name);
-                        $stmt->bindParam(':last_name', $last_name);
-                        $stmt->bindParam(':gender', $gender);
-                        $stmt->bindParam(':date_of_birth', $date_of_birth);
-                        $stmt->bindParam(':account_status', $account_status);
-                        $stmt->bindParam(':customer_image', $customer_image);
-                        $stmt->bindParam(':registration_date_time', $registration_date_time);
-
                         if ($stmt->execute()) {
                             echo "<div class='alert alert-success'>Record was saved.</div>";
                             $username = $email = $first_name = $last_name = $gender = $date_of_birth = $account_status = '';

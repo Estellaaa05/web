@@ -79,7 +79,7 @@ if (!isset($_SESSION["login"])) {
                 <td>Name</td>
                 <td>
                     <?php echo htmlspecialchars($name, ENT_QUOTES);
-                    $imageSource = !empty($product_image) ? 'http://localhost/web/project/product_uploads/' . $product_image :
+                    $imageSource = !empty($product_image) ? $product_image :
                         'http://localhost/web/project/img/default_product_photo.jpg';
                     echo "<br><img src={$imageSource} width=100px height=100px>"; ?>
                 </td>
@@ -118,7 +118,7 @@ if (!isset($_SESSION["login"])) {
             <tr>
                 <td>Expired Date</td>
                 <td>
-                    <?php echo htmlspecialchars($expired_date, ENT_QUOTES); ?>
+                    <?php echo !empty($expired_date) ? htmlspecialchars($expired_date, ENT_QUOTES) : '-'; ?>
                 </td>
             </tr>
             <tr>
@@ -131,6 +131,7 @@ if (!isset($_SESSION["login"])) {
                 <td></td>
                 <td>
                     <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
+                    <?php echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>"; ?>
                 </td>
             </tr>
         </table>

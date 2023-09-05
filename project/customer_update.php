@@ -183,17 +183,33 @@ if (!isset($_SESSION["login"])) {
                     if (!is_dir($target_directory)) {
                         mkdir($target_directory, 0777, true);
                     }
+                } else {
+                    $target_file = NULL;
                 }
 
                 if ($flag) {
                     $submitFlag = true;
+
+                    if (isset($_POST['remove_photo']) && $_POST['remove_photo'] == 1) {
+                        if (file_exists($previousImage)) {
+                            if (unlink($previousImage)) {
+                                //previousImage deleted successfully
+                            } else {
+                                echo "Failed to delete the previous image.";
+                                $submitFlag = false;
+                            }
+                        }
+                    }
+
                     // if $file_upload_error_messages is still empty
                     if ($customer_image) {
 
-                        if (!empty($previousImage)) {
-                            $previousImagePath = "customer_uploads/" . $previousImage;
-                            if (file_exists($previousImagePath)) {
-                                unlink($previousImagePath);
+                        if (file_exists($previousImage)) {
+                            if (unlink($previousImage)) {
+                                //previousImage deleted successfully
+                            } else {
+                                echo "Failed to delete the previous image.";
+                                $submitFlag = false;
                             }
                         }
 
@@ -209,23 +225,13 @@ if (!isset($_SESSION["login"])) {
                     }
 
                     if ($submitFlag) {
-                        if ($customer_image && !empty($new_password)) {
-                            $query = "UPDATE customers SET password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status,customer_image=:customer_image WHERE ID = :ID";
+                        if (!empty($new_password)) {
+                            $query = "UPDATE customers SET password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status, customer_image=:customer_image WHERE ID = :ID";
                             $stmt = $con->prepare($query);
                             $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
                             $stmt->bindParam(':password', $password_hash);
-                            $stmt->bindParam(':customer_image', $customer_image);
-                        } else if (!empty($new_password)) {
-                            $query = "UPDATE customers SET password=:password, first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
-                            $stmt = $con->prepare($query);
-                            $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-                            $stmt->bindParam(':password', $password_hash);
-                        } else if ($customer_image) {
-                            $query = "UPDATE customers SET first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status,customer_image=:customer_image WHERE ID = :ID";
-                            $stmt = $con->prepare($query);
-                            $stmt->bindParam(':customer_image', $customer_image);
                         } else {
-                            $query = "UPDATE customers SET first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status WHERE ID = :ID";
+                            $query = "UPDATE customers SET first_name=:first_name, last_name=:last_name, gender=:gender, date_of_birth=:date_of_birth, account_status=:account_status, customer_image=:customer_image WHERE ID = :ID";
                             $stmt = $con->prepare($query);
                         }
 
@@ -235,10 +241,11 @@ if (!isset($_SESSION["login"])) {
                         $stmt->bindParam(':gender', $gender);
                         $stmt->bindParam(':date_of_birth', $date_of_birth);
                         $stmt->bindParam(':account_status', $account_status);
+                        $stmt->bindParam(':customer_image', $target_file);
 
                         if ($stmt->execute()) {
                             echo "<div class='alert alert-success'>Record was updated.</div>";
-                            $old_password = $new_password = '';
+                            $old_password = $new_password = $previousImage = '';
                         } else {
                             echo "<div class='alert alert-danger'>Unable to update record. Please try again.</div>";
                         }
@@ -355,7 +362,20 @@ if (!isset($_SESSION["login"])) {
                 </tr>
                 <tr>
                     <td>Profile Picture</td>
-                    <td><input type="file" name="customer_image" />
+
+                    <td>
+                        <?php
+                        $imageSource = !empty($customer_image) ? $target_file : $previousImage;
+
+                        if (!empty($previousImage) || !empty($customer_image)) {
+                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" />Remove Photo</label>
+                        <br>';
+                        }
+
+                        $image = (!empty($previousImage) || !empty($customer_image)) ? "<img src={$imageSource} width=100px height=100px/><br>" : '';
+                        echo $image;
+                        ?>
+                        <input type="file" name="customer_image" />
                         <div class='text-danger'>
                             <?php echo $file_upload_error_messages; ?>
                         </div>
