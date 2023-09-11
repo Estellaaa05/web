@@ -12,7 +12,7 @@ if (!isset($_SESSION["login"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Product Categories</title>
+    <title>Create Product Category</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
@@ -24,7 +24,7 @@ if (!isset($_SESSION["login"])) {
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Create Product Categories</h1>
+            <h1>Create Product Category</h1>
         </div>
 
         <!-- html form to create product will be here -->
@@ -73,7 +73,7 @@ if (!isset($_SESSION["login"])) {
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
-                    <td>Category Name</td>
+                    <th>Category Name</th>
                     <td><input type='text' name='category_name' class='form-control'
                             value="<?php echo isset($category_name) ? $category_name : ''; ?>" />
                         <div class='text-danger'>
@@ -83,7 +83,7 @@ if (!isset($_SESSION["login"])) {
                 </tr>
 
                 <tr>
-                    <td>Category Description</td>
+                    <th>Category Description</th>
                     <td><textarea name='category_description'
                             class='form-control'><?php echo isset($category_description) ? $category_description : ''; ?></textarea>
                         <div class='text-danger'>
@@ -91,14 +91,11 @@ if (!isset($_SESSION["login"])) {
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='product_create.php' class='btn btn-danger'>Create New Product</a>
-                    </td>
-                </tr>
             </table>
+            <div class="readOneBtn">
+                <input type='submit' value='Save' class='btn btn-primary' />
+                <a href='product_create.php' class='btn btn-danger'>Create New Product</a>
+            </div>
         </form>
 
     </div>  <!-- end .container -->

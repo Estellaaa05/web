@@ -264,7 +264,7 @@ if (!isset($_SESSION["login"])) {
             enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
-                    <td>First Name</td>
+                    <th>First Name</th>
                     <td><input type='text' name='first_name' class='form-control'
                             value="<?php echo htmlspecialchars($first_name, ENT_QUOTES); ?>" />
                         <div class='text-danger'>
@@ -273,7 +273,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Last Name</td>
+                    <th>Last Name</th>
                     <td><input type='text' name='last_name' class='form-control'
                             value="<?php echo htmlspecialchars($last_name, ENT_QUOTES); ?>" />
                         <div class='text-danger'>
@@ -282,7 +282,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Gender</td>
+                    <th>Gender</th>
                     <td>
                         <div class="form-control">
                             <input type="radio" id="female" name="gender" value="female" <?php echo (isset($gender) && $gender == "female") ? "checked" : ''; ?>>
@@ -297,7 +297,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Date Of Birth</td>
+                    <th>Date Of Birth</th>
                     <td><input type='date' name='date_of_birth' class='form-control'
                             value="<?php echo htmlspecialchars($date_of_birth, ENT_QUOTES); ?>" />
                         <div class='text-danger'>
@@ -306,7 +306,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Account Status</td>
+                    <th>Account Status</th>
                     <td>
                         <div class="form-control">
                             <input type="radio" id="active" name="account_status" value="active" <?php echo (isset($account_status) && $account_status == "active") ? "checked" : ''; ?>>
@@ -323,13 +323,14 @@ if (!isset($_SESSION["login"])) {
                         </div>
                     </td>
                 </tr>
+
                 <tr>
-                    <td class="bg-color" colspan=2>
-                        Change Password (Optional)
-                    </td>
+                    <th colspan=2>
+                        <div class=optional>Change Password (Optional)</div>
+                    </th>
                 </tr>
                 <tr>
-                    <td>Old Password</td>
+                    <th>Old Password</th>
                     <td><input type='password' name='old_password' class='form-control'
                             value="<?php echo isset($old_password) ? $old_password : ''; ?>"></textarea>
                         <div class='text-danger'>
@@ -338,7 +339,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>New Password</td>
+                    <th>New Password</th>
                     <td><input type='password' name='new_password' class='form-control'
                             value="<?php echo isset($new_password) ? $new_password : ''; ?>"></textarea>
                         <div class='text-danger'>
@@ -347,7 +348,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Confirm New Password</td>
+                    <th>Confirm New Password</th>
                     <td><input type='password' name='confirm_password' class='form-control'></textarea>
                         <div class='text-danger'>
                             <?php echo $confirm_passwordEr; ?>
@@ -356,19 +357,19 @@ if (!isset($_SESSION["login"])) {
                 </tr>
 
                 <tr>
-                    <td class="bg-color" colspan=2>
-                        Change Profile Picture (Optional)
-                    </td>
+                    <th colspan=2>
+                        <div class=optional>Change Profile Picture (Optional)</div>
+                    </th>
                 </tr>
                 <tr>
-                    <td>Profile Picture</td>
+                    <th>Profile Picture</th>
 
                     <td>
                         <?php
                         $imageSource = !empty($customer_image) ? $target_file : $previousImage;
 
                         if (!empty($previousImage) || !empty($customer_image)) {
-                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" />Remove Photo</label>
+                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" /> Remove Photo</label>
                         <br>';
                         }
 
@@ -381,15 +382,12 @@ if (!isset($_SESSION["login"])) {
                         </div>
                     </td>
                 </tr>
-
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
-                    </td>
-                </tr>
             </table>
+
+            <div class="readOneBtn">
+                <input type='submit' value='Save Changes' class='btn btn-primary' />
+                <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a>
+            </div>
         </form>
 
     </div>

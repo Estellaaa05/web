@@ -201,7 +201,7 @@ if (!isset($_SESSION["login"])) {
             enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
-                    <td>Name</td>
+                    <th>Name</th>
                     <td><input type='text' name='name' class='form-control'
                             value="<?php echo isset($name) ? $name : ''; ?>" />
                         <div class='text-danger'>
@@ -211,7 +211,7 @@ if (!isset($_SESSION["login"])) {
                 </tr>
 
                 <tr>
-                    <td>Category</td>
+                    <th>Category</th>
                     <td>
                         <select class="form-select" name="category_ID" id="category_ID">
                             <option value="">Select Category</option>
@@ -233,7 +233,7 @@ if (!isset($_SESSION["login"])) {
                 </tr>
 
                 <tr>
-                    <td>Description</td>
+                    <th>Description</th>
                     <td><textarea name='description'
                             class='form-control'><?php echo isset($description) ? $description : ''; ?></textarea>
                         <div class='text-danger'>
@@ -242,7 +242,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Price</td>
+                    <th>Price (RM)</th>
                     <td><input type='text' name='price' class='form-control'
                             value="<?php echo isset($price) ? $price : ''; ?>" />
                         <div class='text-danger'>
@@ -251,7 +251,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Promotion Price</td>
+                    <th>Promotion Price (RM)</th>
                     <td><input type='text' name='promotion_price' class='form-control'
                             value="<?php echo isset($promotion_price) ? $promotion_price : ''; ?>" />
                         <div class='text-danger'>
@@ -260,7 +260,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Manufacture Date</td>
+                    <th>Manufacture Date</th>
                     <td><input type='date' name='manufacture_date' class='form-control'
                             value="<?php echo isset($manufacture_date) ? $manufacture_date : ''; ?>" />
                         <div class='text-danger'>
@@ -269,7 +269,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Expired Date</td>
+                    <th>Expired Date</th>
                     <td><input type='date' name='expired_date' class='form-control'
                             value="<?php echo isset($expired_date) ? $expired_date : ''; ?>" />
                         <div class='text-danger'>
@@ -278,22 +278,19 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Product Photo (Optional)</td>
+                    <th>Product Photo (Optional)</th>
                     <td><input type="file" name="product_image" />
                         <div class='text-danger'>
                             <?php echo $file_upload_error_messages; ?>
                         </div>
                     </td>
                 </tr>
-
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
-                    </td>
-                </tr>
             </table>
+
+            <div class="readOneBtn">
+                <input type='submit' value='Save' class='btn btn-primary' />
+                <a href='product_read.php' class='btn btn-danger'>Back to Product Listing</a>
+            </div>
         </form>
 
     </div>  <!-- end .container -->

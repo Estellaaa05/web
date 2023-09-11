@@ -250,13 +250,12 @@ if (!isset($_SESSION["login"])) {
         }
         ?>
 
-
         <!--we have our html form here where new record information can be updated-->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post"
             enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
-                    <td>Name</td>
+                    <th>Name</th>
                     <td><input type='text' name='name' value="<?php echo htmlspecialchars($name, ENT_QUOTES); ?>"
                             class='form-control' />
                         <div class='text-danger'>
@@ -265,7 +264,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Category</td>
+                    <th>Category</th>
                     <td>
                         <select class="form-select" name="category_ID" id="category_ID">
                             <option value="">Select Category</option>
@@ -284,7 +283,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Description</td>
+                    <th>Description</th>
                     <td><textarea name='description'
                             class='form-control'><?php echo htmlspecialchars($description, ENT_QUOTES); ?></textarea>
                         <div class='text-danger'>
@@ -293,7 +292,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Price</td>
+                    <th>Price (RM)</th>
                     <td><input type='text' name='price' value="<?php echo htmlspecialchars($price, ENT_QUOTES); ?>"
                             class='form-control' />
                         <div class='text-danger'>
@@ -302,7 +301,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Promotion Price</td>
+                    <th>Promotion Price (RM)</th>
                     <td><input type='text' name='promotion_price'
                             value="<?php echo htmlspecialchars($promotion_price, ENT_QUOTES); ?>"
                             class='form-control' />
@@ -312,7 +311,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Manufacture Date</td>
+                    <th>Manufacture Date</th>
                     <td><input type='date' name='manufacture_date' value="<?php echo $manufacture_date; ?>"
                             class='form-control' />
                         <div class='text-danger'>
@@ -321,7 +320,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Expired Date</td>
+                    <th>Expired Date</th>
                     <td><input type='date' name='expired_date' value="<?php echo $expired_date; ?>"
                             class='form-control' />
                         <div class='text-danger'>
@@ -330,13 +329,13 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Product Photo (Optional)</td>
+                    <th>Product Photo (Optional)</th>
                     <td>
                         <?php
                         $imageSource = !empty($product_image) ? $target_file : $previousImage;
 
                         if (!empty($previousImage) || !empty($product_image)) {
-                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" />Remove Photo</label>
+                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" /> Remove Photo</label>
                         <br>';
                         }
 
@@ -349,15 +348,11 @@ if (!isset($_SESSION["login"])) {
                         </div>
                     </td>
                 </tr>
-
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type='submit' value='Save Changes' class='btn btn-primary' />
-                        <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
-                    </td>
-                </tr>
             </table>
+            <div class="readOneBtn">
+                <input type='submit' value='Save Changes' class='btn btn-primary' />
+                <a href='product_read.php' class='btn btn-danger'>Back to Product Listing</a>
+            </div>
         </form>
 
     </div>

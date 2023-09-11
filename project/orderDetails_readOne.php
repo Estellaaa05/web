@@ -12,7 +12,7 @@ if (!isset($_SESSION["login"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Read Orders</title>
+    <title>Order Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <style>
@@ -28,7 +28,7 @@ if (!isset($_SESSION["login"])) {
     ?>
     <div class="container">
         <div class="page-header">
-            <h1>Read Order</h1>
+            <h1>Order Details</h1>
         </div>
 
         <?php
@@ -111,13 +111,26 @@ if (!isset($_SESSION["login"])) {
                 <?php echo "<div class=price>" . htmlspecialchars($total_price, ENT_QUOTES) . "</div>"; ?>
             </td>
         </tr>
-        <tr>
-            <td colspan=6>
-                <a href='orderSummary_read.php' class='btn btn-danger'>Back to Read Order</a>
-            </td>
-        </tr>
         </table>
+        <div class="readOneBtn">
+            <a href='orderSummary_read.php' class='btn btn-info m-r-1em'>Back to Read Order</a>
+            <?php echo "<a href='order_update.php?order_ID={$order_ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
+            echo "<a href='#' onclick='delete_order({$order_ID});'  class='btn btn-danger'>Delete</a>"; ?>
+        </div>
     </div> <!-- end .container -->
+
+    <script type='text/javascript'>
+        // confirm record deletion
+        function delete_order(order_ID) {
+
+            var answer = confirm('Are you sure?');
+            if (answer) {
+                // if user clicked ok,
+                // pass the id to delete.php and execute the delete query
+                window.location = 'order_delete.php?order_ID=' + order_ID;
+            }
+        }
+    </script>
 
 </body>
 

@@ -12,7 +12,7 @@ if (!isset($_SESSION["login"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Order Form</title>
+    <title>Create Order</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
@@ -24,7 +24,7 @@ if (!isset($_SESSION["login"])) {
 
     <div class="container">
         <div class="page-header">
-            <h1>Order Form</h1>
+            <h1>Create Order</h1>
         </div>
 
         <?php
@@ -185,7 +185,7 @@ if (!isset($_SESSION["login"])) {
                     <?php
                     $customer_ID = isset($_POST["customer_ID"]) ? $_POST["customer_ID"] : '';
                     ?>
-                    <td>Customer</td>
+                    <th>Customer</th>
                     <td colspan=3>
                         <select class="form-select" name="customer_ID" id="customer_ID">
                             <option value="">Select username</option>
@@ -207,7 +207,7 @@ if (!isset($_SESSION["login"])) {
                 </tr>
 
                 <tr>
-                    <td>Total product</td>
+                    <th>Total product</th>
                     <td colspan=2>
                         <input type='number' name='totalProduct' class='form-control'
                             value="<?php echo isset($_POST["totalProduct"]) ? $_POST["totalProduct"] : 1; ?>" />
@@ -230,9 +230,9 @@ if (!isset($_SESSION["login"])) {
                     ?>
 
                     <tr>
-                        <td>Product
+                        <th>Product
                             <?php echo $i + 1 ?>
-                        </td>
+                        </th>
                         <td>
                             <select class="form-select" name="product_ID[]">
                                 <option value="">Select product</option>
@@ -255,7 +255,7 @@ if (!isset($_SESSION["login"])) {
                                 } ?>
                             </div>
                         </td>
-                        <td>Quantity</td>
+                        <th>Quantity</th>
                         <td><input type='number' name='quantity[]' class='form-control'
                                 value="<?php echo isset($_POST["quantity"][$i]) ? $_POST["quantity"][$i] : ''; ?>" />
                             <div class='text-danger'>
@@ -268,15 +268,12 @@ if (!isset($_SESSION["login"])) {
                     <?php
                 }
                 ?>
-
-                <tr>
-                    <td></td>
-                    <td colspan=3>
-                        <input type='submit' name='save' value='Save' class='btn btn-primary' />
-                        <a href='orderSummary_read.php' class='btn btn-danger'>Back to Read Order</a>
-                    </td>
-                </tr>
             </table>
+
+            <div class="readOneBtn">
+                <input type='submit' name='save' value='Save' class='btn btn-primary' />
+                <a href='orderSummary_read.php' class='btn btn-danger'>Back to Order Listing</a>
+            </div>
         </form>
 
     </div>  <!-- end .container -->

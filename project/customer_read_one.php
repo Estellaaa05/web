@@ -12,7 +12,7 @@ if (!isset($_SESSION["login"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Read Customer</title>
+    <title>Customer Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
@@ -24,7 +24,7 @@ if (!isset($_SESSION["login"])) {
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Read Customer</h1>
+            <h1>Customer Details</h1>
         </div>
 
         <!-- PHP read one record will be here -->
@@ -39,7 +39,7 @@ if (!isset($_SESSION["login"])) {
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT ID,username, email, password, first_name, last_name, gender, date_of_birth, account_status, customer_image, registration_date_time FROM customers WHERE ID = ?";
+            $query = "SELECT ID,username, email, first_name, last_name, gender, date_of_birth, account_status, customer_image, registration_date_time FROM customers WHERE ID = ?";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -55,7 +55,6 @@ if (!isset($_SESSION["login"])) {
             $ID = $row['ID'];
             $username = $row['username'];
             $email = $row['email'];
-            //$password = $row['password'];
             $first_name = $row['first_name'];
             $last_name = $row['last_name'];
             $gender = $row['gender'];
@@ -75,76 +74,84 @@ if (!isset($_SESSION["login"])) {
         <!--we have our html table here where the record will be displayed-->
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
-                <td>ID</td>
+                <th>ID</th>
                 <td>
                     <?php echo htmlspecialchars($ID, ENT_QUOTES); ?>
                     <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
                 </td>
             </tr>
             <tr>
-                <td>Username</td>
+                <th>Username</th>
                 <td>
-                    <?php echo htmlspecialchars($username, ENT_QUOTES);
-                    $imageSource = !empty($customer_image) ? $customer_image :
-                        'http://localhost/web/project/img/default_profile_photo.jpg';
-                    echo "<br><img src={$imageSource} width=100px height=100px>"; ?>
+                    <?php echo htmlspecialchars($username, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>Email</td>
+                <th>Profile Image</th>
+                <td>
+                    <?php $imageSource = !empty($customer_image) ? $customer_image :
+                        'http://localhost/web/project/img/default_profile_photo.jpg';
+                    echo "<img src={$imageSource} width=100px height=100px>"; ?>
+                </td>
+            </tr>
+            <tr>
+                <th>Email</th>
                 <td>
                     <?php echo htmlspecialchars($email, ENT_QUOTES); ?>
                 </td>
             </tr>
-            <!-- <tr>
-                <td>Password</td>
-                <td>
-                    <?php echo htmlspecialchars($password, ENT_QUOTES); ?>
-                </td>
-            </tr> -->
             <tr>
-                <td>Name</td>
+                <th>Name</th>
                 <td>
                     <?php echo htmlspecialchars($first_name, ENT_QUOTES) . " " . htmlspecialchars($last_name, ENT_QUOTES);
                     ; ?>
                 </td>
             </tr>
             <tr>
-                <td>Gender</td>
+                <th>Gender</th>
                 <td>
                     <?php echo htmlspecialchars($gender, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>Date Of Birth</td>
+                <th>Date Of Birth</th>
                 <td>
                     <?php echo htmlspecialchars($date_of_birth, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>Account Status</td>
+                <th>Account Status</th>
                 <td>
                     <?php echo htmlspecialchars($account_status, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>Registration Datetime</td>
+                <th>Registration Datetime</th>
                 <td>
                     <?php echo htmlspecialchars($registration_date_time, ENT_QUOTES); ?>
                     <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
                 </td>
             </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
-                    <?php echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a>"; ?>
-                </td>
-            </tr>
         </table>
-
-
+        <div class="readOneBtn">
+            <?php echo "<a href='customer_read.php' class='btn btn-info m-r-1em'>Back to Customer Listing</a> ";
+            echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
+            echo "<a href='#' onclick='delete_customer({$ID});'  class='btn btn-danger'>Delete</a>"; ?>
+        </div>
     </div> <!-- end .container -->
+
+    <script type='text/javascript'>
+        // confirm record deletion
+        function delete_customer(ID) {
+
+            var answer = confirm('Are you sure?');
+            if (answer) {
+                // if user clicked ok,
+                // pass the id to delete.php and execute the delete query
+                window.location = 'customer_delete.php?ID=' + ID;
+            }
+        }
+    </script>
 
 </body>
 

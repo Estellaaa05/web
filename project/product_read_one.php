@@ -12,7 +12,7 @@ if (!isset($_SESSION["login"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Read Products</title>
+    <title>Product Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
@@ -24,7 +24,7 @@ if (!isset($_SESSION["login"])) {
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Read Product</h1>
+            <h1>Product Details</h1>
         </div>
 
         <!-- PHP read one record will be here -->
@@ -76,29 +76,34 @@ if (!isset($_SESSION["login"])) {
         <!--we have our html table here where the record will be displayed-->
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
-                <td>Name</td>
+                <th>Name</th>
                 <td>
-                    <?php echo htmlspecialchars($name, ENT_QUOTES);
-                    $imageSource = !empty($product_image) ? $product_image :
-                        'http://localhost/web/project/img/default_product_photo.jpg';
-                    echo "<br><img src={$imageSource} width=100px height=100px>"; ?>
+                    <?php echo htmlspecialchars($name, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>Category</td>
+                <th>Product Image</th>
+                <td>
+                    <?php $imageSource = !empty($product_image) ? $product_image :
+                        'http://localhost/web/project/img/default_product_photo.jpg';
+                    echo "<img src={$imageSource} width=100px height=100px>"; ?>
+                </td>
+            </tr>
+            <tr>
+                <th>Category</th>
                 <td>
                     <?php echo htmlspecialchars($category_ID, ENT_QUOTES) . " - " . htmlspecialchars($category_name, ENT_QUOTES); ?>
                     <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
                 </td>
             </tr>
             <tr>
-                <td>Description</td>
+                <th>Description</th>
                 <td>
                     <?php echo htmlspecialchars($description, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>Price</td>
+                <th>Price</th>
                 <td>
                     <?php
                     if ($promotion_price > 0) {
@@ -110,34 +115,46 @@ if (!isset($_SESSION["login"])) {
                 </td>
             </tr>
             <tr>
-                <td>Manufacture Date</td>
+                <th>Manufacture Date</th>
                 <td>
                     <?php echo htmlspecialchars($manufacture_date, ENT_QUOTES); ?>
                 </td>
             </tr>
             <tr>
-                <td>Expired Date</td>
+                <th>Expired Date</th>
                 <td>
                     <?php echo !empty($expired_date) ? htmlspecialchars($expired_date, ENT_QUOTES) : '-'; ?>
                 </td>
             </tr>
             <tr>
-                <td>Created</td>
+                <th>Created</th>
                 <td>
                     <?php echo htmlspecialchars($created, ENT_QUOTES); ?>
                 </td>
             </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
-                    <?php echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>"; ?>
-                </td>
-            </tr>
         </table>
 
+        <div class="readOneBtn">
+            <?php
+            echo "<a href='product_read.php' class='btn btn-info m-r-1em'>Back to Product Listing</a> ";
+            echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a> ";
+            echo "<a href='#' onclick='delete_product({$id});' class='btn btn-danger'>Delete</a>"; ?>
+        </div>
 
     </div> <!-- end .container -->
+
+    <script type='text/javascript'>
+        // confirm record deletion
+        function delete_product(id) {
+
+            var answer = confirm('Are you sure?');
+            if (answer) {
+                // if user clicked ok,
+                // pass the id to delete.php and execute the delete query
+                window.location = 'product_delete.php?id=' + id;
+            }
+        }
+    </script>
 
 </body>
 

@@ -3,21 +3,47 @@
 
 <head>
     <style>
-        <style>.navbar {
-            padding: 10px 35px;
-        }
-
-        .page-header {
-            margin: 15px 0px;
-        }
-
         .custom-container {
             padding: 0px 80px;
+        }
+
+        .navbar {
+            padding: 10px 35px;
         }
 
         .nav-item.dropdown:hover .dropdown-menu {
             display: block;
             background-color: lightgray;
+        }
+
+        .page-header {
+            margin: 15px 0px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        .table th {
+            background-color: #f2f2f2;
+        }
+
+        .optional {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .btn-warning {
+            margin: 0 5px;
+        }
+
+        .readOneBtn {
+            text-align: center;
+            margin: 20px 0 40px 0;
         }
     </style>
 </head>

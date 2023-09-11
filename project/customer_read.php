@@ -12,7 +12,7 @@ if (!isset($_SESSION["login"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Read Customers</title>
+    <title>Customer Listing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
@@ -24,7 +24,7 @@ if (!isset($_SESSION["login"])) {
     <!-- container -->
     <div class="custom-container">
         <div class="page-header">
-            <h1>Read Customers</h1>
+            <h1>Customer Listing</h1>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -42,7 +42,18 @@ if (!isset($_SESSION["login"])) {
 
         $query = "SELECT ID, username, email, password, first_name, last_name, account_status, customer_image, registration_date_time FROM customers ORDER BY ID ASC";
 
-        if ($_GET) {
+        $action = isset($_GET['action']) ? $_GET['action'] : "";
+
+        // if it was redirected from delete.php
+        if ($action == 'deleted') {
+            echo "<div class='alert alert-success'>Record was deleted.</div>";
+        }
+
+        if ($action == 'unableDelete') {
+            echo "<div class='alert alert-danger'>This customer is in one of the order(s), unable to delete record.</div>";
+        }
+
+        if ($_GET && $action !== 'unableDelete' && $action !== 'deleted') {
             $search = $_GET['search'];
 
             if (empty($search)) {
@@ -71,7 +82,7 @@ if (!isset($_SESSION["login"])) {
             echo "<th>Email</th>";
             //echo "<th>Password</th>";
             echo "<th>Name</th>";
-            echo "<th>Account Status</th>";
+            echo "<th>Status</th>";
             echo "<th>Registration Datetime</th>";
             echo "<th>Action</th>";
             echo "</tr>";
@@ -102,7 +113,7 @@ if (!isset($_SESSION["login"])) {
                 echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
 
                 // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$ID});'  class='btn btn-danger'>Delete</a>";
+                echo "<a href='#' onclick='delete_customer({$ID});'  class='btn btn-danger'>Delete</a>";
                 echo "</td>";
                 echo "</tr>";
             }
@@ -118,7 +129,18 @@ if (!isset($_SESSION["login"])) {
 
     </div> <!-- end .container -->
 
-    <!-- confirm delete record will be here -->
+    <script type='text/javascript'>
+        // confirm record deletion
+        function delete_customer(ID) {
+
+            var answer = confirm('Are you sure?');
+            if (answer) {
+                // if user clicked ok,
+                // pass the id to delete.php and execute the delete query
+                window.location = 'customer_delete.php?ID=' + ID;
+            }
+        }
+    </script>
 
 </body>
 

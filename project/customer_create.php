@@ -210,7 +210,7 @@ if (!isset($_SESSION["login"])) {
             enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
-                    <td>Username</td>
+                    <th>Username</th>
                     <td><input type='text' name='username' class='form-control'
                             value="<?php echo isset($username) ? $username : ''; ?>" />
                         <div class='text-danger'>
@@ -219,7 +219,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Email</td>
+                    <th>Email</th>
                     <td><input type='text' name='email' class='form-control'
                             value="<?php echo isset($email) ? $email : ''; ?>" />
                         <div class='text-danger'>
@@ -228,7 +228,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Password</td>
+                    <th>Password</th>
                     <td><input type='password' name='password' class='form-control'></textarea>
                         <div class='text-danger'>
                             <?php echo $passwordEr; ?>
@@ -236,7 +236,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Confirm Password</td>
+                    <th>Confirm Password</th>
                     <td><input type='password' name='confirm_password' class='form-control'></textarea>
                         <div class='text-danger'>
                             <?php echo $confirm_passwordEr; ?>
@@ -244,7 +244,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>First Name</td>
+                    <th>First Name</th>
                     <td><input type='text' name='first_name' class='form-control'
                             value="<?php echo isset($first_name) ? $first_name : ''; ?>" />
                         <div class='text-danger'>
@@ -253,7 +253,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Last Name</td>
+                    <th>Last Name</th>
                     <td><input type='text' name='last_name' class='form-control'
                             value="<?php echo isset($last_name) ? $last_name : ''; ?>" />
                         <div class='text-danger'>
@@ -262,7 +262,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Gender</td>
+                    <th>Gender</th>
                     <td>
                         <div class="form-control">
                             <input type="radio" id="female" name="gender" value="female" <?php echo (isset($gender) && $gender == "female") ? "checked" : ''; ?>>
@@ -277,7 +277,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Date Of Birth</td>
+                    <th>Date Of Birth</th>
                     <td><input type='date' name='date_of_birth' class='form-control'
                             value="<?php echo isset($date_of_birth) ? $date_of_birth : ''; ?>" />
                         <div class='text-danger'>
@@ -286,7 +286,7 @@ if (!isset($_SESSION["login"])) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Account Status</td>
+                    <th>Account Status</th>
                     <td>
                         <div class="form-control">
                             <input type="radio" id="active" name="account_status" value="active" <?php echo (isset($account_status) && $account_status == "active") ? "checked" : ''; ?>>
@@ -305,22 +305,19 @@ if (!isset($_SESSION["login"])) {
                 </tr>
 
                 <tr>
-                    <td>Profile Photo (Optional)</td>
+                    <th>Profile Photo (Optional)</th>
                     <td><input type="file" name="customer_image" />
                         <div class='text-danger'>
                             <?php echo $file_upload_error_messages; ?>
                         </div>
                     </td>
                 </tr>
-
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='customer_read.php' class='btn btn-danger'>Back to read customers</a>
-                    </td>
-                </tr>
             </table>
+
+            <div class="readOneBtn">
+                <input type='submit' value='Save' class='btn btn-primary' />
+                <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a>
+            </div>
         </form>
 
     </div>  <!-- end .container -->
