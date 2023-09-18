@@ -1,24 +1,9 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 
 <html>
 
 <head>
-
     <title>Update Product</title>
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
@@ -59,7 +44,7 @@ if (!isset($_SESSION["login"])) {
         
             $name = $row['name'];
             $previousImage = $row['product_image'];
-            $category_ID = $row['category_ID'];
+            $previous_category_ID = $row['category_ID'];
             $description = $row['description'];
             $price = $row['price'];
             $promotion_price = $row['promotion_price'];
@@ -88,6 +73,7 @@ if (!isset($_SESSION["login"])) {
                 $product_image = !empty($_FILES["product_image"]["name"])
                     ? sha1_file($_FILES['product_image']['tmp_name']) . "-" . str_replace(" ", "_", basename($_FILES["product_image"]["name"])) : "";
                 $product_image = strip_tags($product_image);
+                $remove_photo = (isset($_POST['remove_photo']) && ($_POST['remove_photo'] == 1)) ? $_POST['remove_photo'] : "";
 
                 $flag = true;
                 if (empty($name)) {
@@ -130,6 +116,25 @@ if (!isset($_SESSION["login"])) {
                 } else if (strtotime($manufacture_date) > strtotime($created)) {
                     $manufactureEr = "Please select a valid manufacture date.";
                     $flag = false;
+                }
+
+                $cat_query = "SELECT category_ID,req_expiredDate FROM product_categories WHERE category_ID = ?";
+                $cat_stmt = $con->prepare($cat_query);
+                $cat_stmt->bindParam(1, $submitted_category_ID);
+                $cat_stmt->execute();
+
+                if ($cat_stmt->rowCount() > 0) {
+                    $category_row = $cat_stmt->fetch(PDO::FETCH_ASSOC);
+                    $req_expiredDate = $category_row['req_expiredDate'];
+                } else {
+                    $req_expiredDate = '';
+                }
+
+                if ($req_expiredDate == 'yes') {
+                    if (empty($expired_date)) {
+                        $expiredEr = "Please select the expired date.";
+                        $flag = false;
+                    }
                 }
 
                 if (!empty($expired_date)) {
@@ -180,13 +185,17 @@ if (!isset($_SESSION["login"])) {
                         mkdir($target_directory, 0777, true);
                     }
                 } else {
-                    $target_file = NULL;
+                    if ($remove_photo) {
+                        $target_file = NULL;
+                    } else {
+                        $target_file = $previousImage;
+                    }
                 }
 
                 if ($flag) {
                     $submitFlag = true;
 
-                    if (isset($_POST['remove_photo']) && $_POST['remove_photo'] == 1) {
+                    if ($remove_photo) {
                         if (file_exists($previousImage)) {
                             if (unlink($previousImage)) {
                                 //previousImage deleted successfully
@@ -253,102 +262,104 @@ if (!isset($_SESSION["login"])) {
         <!--we have our html form here where new record information can be updated-->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post"
             enctype="multipart/form-data">
-            <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <th>Name</th>
-                    <td><input type='text' name='name' value="<?php echo htmlspecialchars($name, ENT_QUOTES); ?>"
-                            class='form-control' />
-                        <div class='text-danger'>
-                            <?php echo $nameEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Category</th>
-                    <td>
-                        <select class="form-select" name="category_ID" id="category_ID">
-                            <option value="">Select Category</option>
+            <div class='table-responsive table-mobile-responsive'>
+                <table class='table table-hover table-bordered'>
+                    <tr>
+                        <th>Name</th>
+                        <td><input type='text' name='name' value="<?php echo htmlspecialchars($name, ENT_QUOTES); ?>"
+                                class='form-control' />
+                            <div class='text-danger'>
+                                <?php echo $nameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <td>
+                            <select class="form-select" name="category_ID" id="category_ID">
+                                <option value="">Select Category</option>
+                                <?php
+
+                                while ($row = $select_stmt->fetch(PDO::FETCH_ASSOC)) {
+                                    extract($row);
+                                    $selected = ($category_ID == (isset($submitted_category_ID) ? $submitted_category_ID : $previous_category_ID)) ? 'selected' : '';
+                                    echo "<option value='$category_ID' $selected>$category_name</option>";
+                                }
+                                ?>
+                            </select>
+                            <div class='text-danger'>
+                                <?php echo $categoryEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td><textarea name='description'
+                                class='form-control'><?php echo htmlspecialchars($description, ENT_QUOTES); ?></textarea>
+                            <div class='text-danger'>
+                                <?php echo $descriptionEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Price (RM)</th>
+                        <td><input type='text' name='price' value="<?php echo htmlspecialchars($price, ENT_QUOTES); ?>"
+                                class='form-control' />
+                            <div class='text-danger'>
+                                <?php echo $priceEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Promotion Price (RM)</th>
+                        <td><input type='text' name='promotion_price'
+                                value="<?php echo htmlspecialchars($promotion_price, ENT_QUOTES); ?>"
+                                class='form-control' />
+                            <div class='text-danger'>
+                                <?php echo $promotionEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Manufacture Date</th>
+                        <td><input type='date' name='manufacture_date' value="<?php echo $manufacture_date; ?>"
+                                class='form-control' />
+                            <div class='text-danger'>
+                                <?php echo $manufactureEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Expired Date</th>
+                        <td><input type='date' name='expired_date' value="<?php echo $expired_date; ?>"
+                                class='form-control' />
+                            <div class='text-danger'>
+                                <?php echo $expiredEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Product Photo (Optional)</th>
+                        <td>
                             <?php
+                            $imageSource = !empty($previousImage) ? $previousImage : (!empty($target_file) ? $target_file : '');
 
-                            while ($row = $select_stmt->fetch(PDO::FETCH_ASSOC)) {
-                                extract($row);
-                                $selected = ($category_ID == (isset($submitted_category_ID) ? $submitted_category_ID : $category_ID)) ? 'selected' : '';
-                                echo "<option value='$category_ID' $selected>$category_name</option>";
-                            }
-                            ?>
-                        </select>
-                        <div class='text-danger'>
-                            <?php echo $categoryEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Description</th>
-                    <td><textarea name='description'
-                            class='form-control'><?php echo htmlspecialchars($description, ENT_QUOTES); ?></textarea>
-                        <div class='text-danger'>
-                            <?php echo $descriptionEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Price (RM)</th>
-                    <td><input type='text' name='price' value="<?php echo htmlspecialchars($price, ENT_QUOTES); ?>"
-                            class='form-control' />
-                        <div class='text-danger'>
-                            <?php echo $priceEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Promotion Price (RM)</th>
-                    <td><input type='text' name='promotion_price'
-                            value="<?php echo htmlspecialchars($promotion_price, ENT_QUOTES); ?>"
-                            class='form-control' />
-                        <div class='text-danger'>
-                            <?php echo $promotionEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Manufacture Date</th>
-                    <td><input type='date' name='manufacture_date' value="<?php echo $manufacture_date; ?>"
-                            class='form-control' />
-                        <div class='text-danger'>
-                            <?php echo $manufactureEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Expired Date</th>
-                    <td><input type='date' name='expired_date' value="<?php echo $expired_date; ?>"
-                            class='form-control' />
-                        <div class='text-danger'>
-                            <?php echo $expiredEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Product Photo (Optional)</th>
-                    <td>
-                        <?php
-                        $imageSource = !empty($product_image) ? $target_file : $previousImage;
-
-                        if (!empty($previousImage) || !empty($product_image)) {
-                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" /> Remove Photo</label>
+                            if (!empty($previousImage) || !empty($target_file)) {
+                                echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" /> Remove Photo</label>
                         <br>';
-                        }
+                            }
 
-                        $image = (!empty($previousImage) || !empty($product_image)) ? "<img src={$imageSource} width=100px height=100px/><br>" : '';
-                        echo $image;
-                        ?>
-                        <input type="file" name="product_image" />
-                        <div class='text-danger'>
-                            <?php echo $file_upload_error_messages; ?>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                            $image = (!empty($previousImage) || !empty($target_file)) ? "<img src={$imageSource} class='img-thumbnail' width=100px height=100px/><br>" : '';
+                            echo $image;
+                            ?>
+                            <input type="file" name="product_image" />
+                            <div class='text-danger'>
+                                <?php echo $file_upload_error_messages; ?>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <div class="readOneBtn">
                 <input type='submit' value='Save Changes' class='btn btn-primary' />
                 <a href='product_read.php' class='btn btn-danger'>Back to Product Listing</a>
@@ -357,6 +368,10 @@ if (!isset($_SESSION["login"])) {
 
     </div>
     <!-- end .container -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 
 </body>
 

@@ -15,33 +15,18 @@ if (isset($_SESSION["warning"])) {
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <head>
         <style>
             .container {
-                width: 60%;
-                margin-top: 100px;
+                margin: 90px 55px;
             }
 
-            .page-header {
-                margin: 15px 0px;
+            .loginBtn {
                 text-align: center;
-                padding: 10px;
-            }
-
-            .table th,
-            .table td {
-                border: 1px solid #ccc;
-                padding: 8px;
-            }
-
-            .table th {
-                background-color: #f2f2f2;
-            }
-
-            .readOneBtn {
-                text-align: center;
-                margin: 20px 0 40px 0;
+                margin: 25px 0 10px 0;
             }
         </style>
     </head>
@@ -49,9 +34,6 @@ if (isset($_SESSION["warning"])) {
 
 <body>
     <div class="container">
-        <div class="page-header">
-            <h1>Please Login</h1>
-        </div>
 
         <?php
 
@@ -91,17 +73,17 @@ if (isset($_SESSION["warning"])) {
 
                         if (password_verify($login_password, $password_hash)) {
                             if ($account_status !== "active") {
-                                echo "<div class='alert alert-danger'>Inactive account.</div>";
+                                $usernameEr = "This is an inactive account";
                             } else {
                                 $_SESSION["login"] = $login_usernameEmail;
                                 header("Location:dashboard.php");
                                 exit;
                             }
                         } else {
-                            echo "<div class='alert alert-danger'>Incorrect password.</div>";
+                            $passwordEr = "Password is incorrect.";
                         }
                     } else {
-                        echo "<div class='alert alert-danger'>Username/Email not found.</div>";
+                        $usernameEr = "Username / Email not found.";
                     }
                 }
 
@@ -112,27 +94,39 @@ if (isset($_SESSION["warning"])) {
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <th>Username / Email</th>
-                    <td><input type='text' name='usernameEmail' class='form-control'
-                            value="<?php echo isset($login_usernameEmail) ? $login_usernameEmail : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $usernameEr; ?>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header card text-white bg-dark mb-3">
+                            <h3 class="text-center">Login</h3>
                         </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Password</th>
-                    <td><input type='password' name='password' class='form-control' />
-                        <div class='text-danger'>
-                            <?php echo $passwordEr; ?>
+
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username / Email:</label>
+                                <input type="text" class="form-control" id="usernameEmail" name='usernameEmail'
+                                    placeholder="Enter your Username or Email"
+                                    value="<?php echo isset($login_usernameEmail) ? $login_usernameEmail : ''; ?>">
+                                <div class='text-danger'>
+                                    <?php echo $usernameEr; ?>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password:</label>
+                                <input type="password" class="form-control" id="password" name='password'
+                                    placeholder="Enter your password">
+                                <div class='text-danger'>
+                                    <?php echo $passwordEr; ?>
+                                </div>
+                            </div>
+
+                            <div class="loginBtn">
+                                <td><input type="submit" value="Login" class='btn btn-primary'></td>
+                            </div>
                         </div>
-                    </td>
-                </tr>
-            </table>
-            <div class="readOneBtn">
-                <td><input type="submit" value="Login" class='btn btn-primary'></td>
+                    </div>
+                </div>
             </div>
         </form>
 

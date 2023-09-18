@@ -1,20 +1,8 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Create Product</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
@@ -34,6 +22,10 @@ if (!isset($_SESSION["login"])) {
         include 'config/database.php';
 
         $nameEr = $categoryEr = $descriptionEr = $priceEr = $promotionEr = $manufactureEr = $expiredEr = $submitted_category_ID = $file_upload_error_messages = "";
+
+        $select_query = "SELECT category_ID,category_name FROM product_categories";
+        $select_stmt = $con->prepare($select_query);
+        $select_stmt->execute();
 
         if ($_POST) {
             // include database connection
@@ -94,6 +86,25 @@ if (!isset($_SESSION["login"])) {
                 } else if (strtotime($manufacture_date) > strtotime($created)) {
                     $manufactureEr = "Please select a valid manufacture date.";
                     $flag = false;
+                }
+
+                $cat_query = "SELECT category_ID,req_expiredDate FROM product_categories WHERE category_ID = ?";
+                $cat_stmt = $con->prepare($cat_query);
+                $cat_stmt->bindParam(1, $submitted_category_ID);
+                $cat_stmt->execute();
+
+                if ($cat_stmt->rowCount() > 0) {
+                    $category_row = $cat_stmt->fetch(PDO::FETCH_ASSOC);
+                    $req_expiredDate = $category_row['req_expiredDate'];
+                } else {
+                    $req_expiredDate = '';
+                }
+
+                if ($req_expiredDate == 'yes') {
+                    if (empty($expired_date)) {
+                        $expiredEr = "Please select the expired date.";
+                        $flag = false;
+                    }
                 }
 
                 if (!empty($expired_date)) {
@@ -189,103 +200,100 @@ if (!isset($_SESSION["login"])) {
                 die('ERROR: ' . $exception->getMessage());
             }
         }
-
-        $select_query = "SELECT category_ID,category_name FROM product_categories";
-        $select_stmt = $con->prepare($select_query);
-        $select_stmt->execute();
-
         ?>
 
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
             enctype="multipart/form-data">
-            <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <th>Name</th>
-                    <td><input type='text' name='name' class='form-control'
-                            value="<?php echo isset($name) ? $name : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $nameEr; ?>
-                        </div>
-                    </td>
-                </tr>
+            <div class='table-responsive table-mobile-responsive'>
+                <table class='table table-hover table-responsive table-bordered'>
+                    <tr>
+                        <th>Name</th>
+                        <td><input type='text' name='name' class='form-control'
+                                value="<?php echo isset($name) ? $name : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $nameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <th>Category</th>
-                    <td>
-                        <select class="form-select" name="category_ID" id="category_ID">
-                            <option value="">Select Category</option>
-                            <?php
+                    <tr>
+                        <th>Category</th>
+                        <td>
+                            <select class="form-select" name="category_ID" id="category_ID">
+                                <option value="">Select Category</option>
+                                <?php
 
-                            while ($row = $select_stmt->fetch(PDO::FETCH_ASSOC)) {
+                                while ($row = $select_stmt->fetch(PDO::FETCH_ASSOC)) {
 
-                                extract($row);
+                                    extract($row);
 
-                                $selected = ($category_ID == $submitted_category_ID) ? 'selected' : '';
-                                echo "<option value='$category_ID' $selected>$category_name</option>";
-                            }
-                            ?>
-                        </select>
-                        <div class='text-danger'>
-                            <?php echo $categoryEr; ?>
-                        </div>
-                    </td>
-                </tr>
+                                    $selected = ($category_ID == $submitted_category_ID) ? 'selected' : '';
+                                    echo "<option value='$category_ID' $selected>$category_name</option>";
+                                }
+                                ?>
+                            </select>
+                            <div class='text-danger'>
+                                <?php echo $categoryEr; ?>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <th>Description</th>
-                    <td><textarea name='description'
-                            class='form-control'><?php echo isset($description) ? $description : ''; ?></textarea>
-                        <div class='text-danger'>
-                            <?php echo $descriptionEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Price (RM)</th>
-                    <td><input type='text' name='price' class='form-control'
-                            value="<?php echo isset($price) ? $price : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $priceEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Promotion Price (RM)</th>
-                    <td><input type='text' name='promotion_price' class='form-control'
-                            value="<?php echo isset($promotion_price) ? $promotion_price : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $promotionEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Manufacture Date</th>
-                    <td><input type='date' name='manufacture_date' class='form-control'
-                            value="<?php echo isset($manufacture_date) ? $manufacture_date : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $manufactureEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Expired Date</th>
-                    <td><input type='date' name='expired_date' class='form-control'
-                            value="<?php echo isset($expired_date) ? $expired_date : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $expiredEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Product Photo (Optional)</th>
-                    <td><input type="file" name="product_image" />
-                        <div class='text-danger'>
-                            <?php echo $file_upload_error_messages; ?>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                    <tr>
+                        <th>Description</th>
+                        <td><textarea name='description'
+                                class='form-control'><?php echo isset($description) ? $description : ''; ?></textarea>
+                            <div class='text-danger'>
+                                <?php echo $descriptionEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Price (RM)</th>
+                        <td><input type='text' name='price' class='form-control'
+                                value="<?php echo isset($price) ? $price : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $priceEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Promotion Price (RM)</th>
+                        <td><input type='text' name='promotion_price' class='form-control'
+                                value="<?php echo isset($promotion_price) ? $promotion_price : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $promotionEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Manufacture Date</th>
+                        <td><input type='date' name='manufacture_date' class='form-control'
+                                value="<?php echo isset($manufacture_date) ? $manufacture_date : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $manufactureEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Expired Date</th>
+                        <td><input type='date' name='expired_date' class='form-control'
+                                value="<?php echo isset($expired_date) ? $expired_date : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $expiredEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Product Photo (Optional)</th>
+                        <td><input type="file" name="product_image" />
+                            <div class='text-danger'>
+                                <?php echo $file_upload_error_messages; ?>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
             <div class="readOneBtn">
                 <input type='submit' value='Save' class='btn btn-primary' />
@@ -298,6 +306,7 @@ if (!isset($_SESSION["login"])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
+
 </body>
 
 </html>

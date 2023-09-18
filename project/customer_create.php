@@ -1,34 +1,19 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Create Customer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
     <?php
     include 'navbar.php';
     ?>
-    <!-- container -->
     <div class="container">
         <div class="page-header">
             <h1>Create Customer</h1>
         </div>
 
-        <!-- html form to create product will be here -->
-        <!-- PHP insert code will be here -->
         <?php
 
         $usernameEr = $emailEr = $passwordEr = $confirm_passwordEr = $first_nameEr = $last_nameEr = $genderEr = $date_of_birthEr = $account_statusEr = $file_upload_error_messages = "";
@@ -208,111 +193,113 @@ if (!isset($_SESSION["login"])) {
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
             enctype="multipart/form-data">
-            <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <th>Username</th>
-                    <td><input type='text' name='username' class='form-control'
-                            value="<?php echo isset($username) ? $username : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $usernameEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Email</th>
-                    <td><input type='text' name='email' class='form-control'
-                            value="<?php echo isset($email) ? $email : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $emailEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Password</th>
-                    <td><input type='password' name='password' class='form-control'></textarea>
-                        <div class='text-danger'>
-                            <?php echo $passwordEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Confirm Password</th>
-                    <td><input type='password' name='confirm_password' class='form-control'></textarea>
-                        <div class='text-danger'>
-                            <?php echo $confirm_passwordEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>First Name</th>
-                    <td><input type='text' name='first_name' class='form-control'
-                            value="<?php echo isset($first_name) ? $first_name : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $first_nameEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Last Name</th>
-                    <td><input type='text' name='last_name' class='form-control'
-                            value="<?php echo isset($last_name) ? $last_name : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $last_nameEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Gender</th>
-                    <td>
-                        <div class="form-control">
-                            <input type="radio" id="female" name="gender" value="female" <?php echo (isset($gender) && $gender == "female") ? "checked" : ''; ?>>
-                            <label for="female">Female</label><br>
+            <div class='table-responsive table-mobile-responsive'>
+                <table class='table table-hover table-responsive table-bordered'>
+                    <tr>
+                        <th>Username</th>
+                        <td><input type='text' name='username' class='form-control'
+                                value="<?php echo isset($username) ? $username : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $usernameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td><input type='text' name='email' class='form-control'
+                                value="<?php echo isset($email) ? $email : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $emailEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Password</th>
+                        <td><input type='password' name='password' class='form-control'></textarea>
+                            <div class='text-danger'>
+                                <?php echo $passwordEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Confirm Password</th>
+                        <td><input type='password' name='confirm_password' class='form-control'></textarea>
+                            <div class='text-danger'>
+                                <?php echo $confirm_passwordEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>First Name</th>
+                        <td><input type='text' name='first_name' class='form-control'
+                                value="<?php echo isset($first_name) ? $first_name : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $first_nameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Last Name</th>
+                        <td><input type='text' name='last_name' class='form-control'
+                                value="<?php echo isset($last_name) ? $last_name : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $last_nameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>
+                            <div class="form-control">
+                                <input type="radio" id="female" name="gender" value="female" <?php echo (isset($gender) && $gender == "female") ? "checked" : ''; ?>>
+                                <label for="female">Female</label><br>
 
-                            <input type="radio" id="male" name="gender" value="male" <?php echo (isset($gender) && $gender == "male") ? "checked" : ''; ?>>
-                            <label for="male">Male</label>
-                        </div>
-                        <div class='text-danger'>
-                            <?php echo $genderEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Date Of Birth</th>
-                    <td><input type='date' name='date_of_birth' class='form-control'
-                            value="<?php echo isset($date_of_birth) ? $date_of_birth : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $date_of_birthEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Account Status</th>
-                    <td>
-                        <div class="form-control">
-                            <input type="radio" id="active" name="account_status" value="active" <?php echo (isset($account_status) && $account_status == "active") ? "checked" : ''; ?>>
-                            <label for="active">Active</label><br>
+                                <input type="radio" id="male" name="gender" value="male" <?php echo (isset($gender) && $gender == "male") ? "checked" : ''; ?>>
+                                <label for="male">Male</label>
+                            </div>
+                            <div class='text-danger'>
+                                <?php echo $genderEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date Of Birth</th>
+                        <td><input type='date' name='date_of_birth' class='form-control'
+                                value="<?php echo isset($date_of_birth) ? $date_of_birth : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $date_of_birthEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Account Status</th>
+                        <td>
+                            <div class="form-control">
+                                <input type="radio" id="active" name="account_status" value="active" <?php echo (isset($account_status) && $account_status == "active") ? "checked" : ''; ?>>
+                                <label for="active">Active</label><br>
 
-                            <input type="radio" id="pending" name="account_status" value="pending" <?php echo (isset($account_status) && $account_status == "pending") ? "checked" : ''; ?>>
-                            <label for="pending">Pending</label><br>
+                                <input type="radio" id="pending" name="account_status" value="pending" <?php echo (isset($account_status) && $account_status == "pending") ? "checked" : ''; ?>>
+                                <label for="pending">Pending</label><br>
 
-                            <input type="radio" id="inactive" name="account_status" value="inactive" <?php echo (isset($account_status) && $account_status == "inactive") ? "checked" : ''; ?>>
-                            <label for="inactive">Inactive</label>
-                        </div>
-                        <div class='text-danger'>
-                            <?php echo $account_statusEr; ?>
-                        </div>
-                    </td>
-                </tr>
+                                <input type="radio" id="inactive" name="account_status" value="inactive" <?php echo (isset($account_status) && $account_status == "inactive") ? "checked" : ''; ?>>
+                                <label for="inactive">Inactive</label>
+                            </div>
+                            <div class='text-danger'>
+                                <?php echo $account_statusEr; ?>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <th>Profile Photo (Optional)</th>
-                    <td><input type="file" name="customer_image" />
-                        <div class='text-danger'>
-                            <?php echo $file_upload_error_messages; ?>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                    <tr>
+                        <th>Profile Photo (Optional)</th>
+                        <td><input type="file" name="customer_image" />
+                            <div class='text-danger'>
+                                <?php echo $file_upload_error_messages; ?>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
             <div class="readOneBtn">
                 <input type='submit' value='Save' class='btn btn-primary' />
@@ -325,6 +312,7 @@ if (!isset($_SESSION["login"])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
+
 </body>
 
 </html>

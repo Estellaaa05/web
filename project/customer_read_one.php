@@ -1,27 +1,14 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Customer Details</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
     <?php
     include 'navbar.php';
     ?>
-    <!-- container -->
     <div class="container">
         <div class="page-header">
             <h1>Customer Details</h1>
@@ -72,67 +59,69 @@ if (!isset($_SESSION["login"])) {
 
         <!-- HTML read one record table will be here -->
         <!--we have our html table here where the record will be displayed-->
-        <table class='table table-hover table-responsive table-bordered'>
-            <tr>
-                <th>ID</th>
-                <td>
-                    <?php echo htmlspecialchars($ID, ENT_QUOTES); ?>
-                    <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
-                </td>
-            </tr>
-            <tr>
-                <th>Username</th>
-                <td>
-                    <?php echo htmlspecialchars($username, ENT_QUOTES); ?>
-                </td>
-            </tr>
-            <tr>
-                <th>Profile Image</th>
-                <td>
-                    <?php $imageSource = !empty($customer_image) ? $customer_image :
-                        'http://localhost/web/project/img/default_profile_photo.jpg';
-                    echo "<img src={$imageSource} width=100px height=100px>"; ?>
-                </td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>
-                    <?php echo htmlspecialchars($email, ENT_QUOTES); ?>
-                </td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>
-                    <?php echo htmlspecialchars($first_name, ENT_QUOTES) . " " . htmlspecialchars($last_name, ENT_QUOTES);
-                    ; ?>
-                </td>
-            </tr>
-            <tr>
-                <th>Gender</th>
-                <td>
-                    <?php echo htmlspecialchars($gender, ENT_QUOTES); ?>
-                </td>
-            </tr>
-            <tr>
-                <th>Date Of Birth</th>
-                <td>
-                    <?php echo htmlspecialchars($date_of_birth, ENT_QUOTES); ?>
-                </td>
-            </tr>
-            <tr>
-                <th>Account Status</th>
-                <td>
-                    <?php echo htmlspecialchars($account_status, ENT_QUOTES); ?>
-                </td>
-            </tr>
-            <tr>
-                <th>Registration Datetime</th>
-                <td>
-                    <?php echo htmlspecialchars($registration_date_time, ENT_QUOTES); ?>
-                    <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
-                </td>
-            </tr>
-        </table>
+        <div class='table-responsive table-mobile-responsive'>
+            <table class='table table-hover table-responsive table-bordered'>
+                <tr>
+                    <th class="w-30">ID</th>
+                    <td>
+                        <?php echo htmlspecialchars($ID, ENT_QUOTES); ?>
+                        <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
+                    </td>
+                </tr>
+                <tr>
+                    <th>Username</th>
+                    <td>
+                        <?php echo htmlspecialchars($username, ENT_QUOTES); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Profile Image</th>
+                    <td>
+                        <?php $imageSource = !empty($customer_image) ? $customer_image :
+                            'http://localhost/web/project/img/default_profile_photo.jpg';
+                        echo "<img src={$imageSource} class='img-thumbnail' width=100px height=100px>"; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>
+                        <?php echo htmlspecialchars($email, ENT_QUOTES); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <?php echo htmlspecialchars($first_name, ENT_QUOTES) . " " . htmlspecialchars($last_name, ENT_QUOTES);
+                        ; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>
+                        <?php echo htmlspecialchars($gender, ENT_QUOTES); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Date Of Birth</th>
+                    <td>
+                        <?php echo htmlspecialchars($date_of_birth, ENT_QUOTES); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Account Status</th>
+                    <td>
+                        <?php echo htmlspecialchars($account_status, ENT_QUOTES); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Registration Datetime</th>
+                    <td>
+                        <?php echo htmlspecialchars($registration_date_time, ENT_QUOTES); ?>
+                        <!--hymlspecialchars with ENT_QUOTES convert single/double quote'" in the string to HTML entity-->
+                    </td>
+                </tr>
+            </table>
+        </div>
         <div class="readOneBtn">
             <?php echo "<a href='customer_read.php' class='btn btn-info m-r-1em'>Back to Customer Listing</a> ";
             echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
@@ -152,6 +141,10 @@ if (!isset($_SESSION["login"])) {
             }
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 
 </body>
 

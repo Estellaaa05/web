@@ -1,11 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 
 <html>
@@ -14,8 +6,6 @@ if (!isset($_SESSION["login"])) {
 
     <title>Update Customer</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <style>
         td.bg-color {
             background-color: lightgray;
@@ -83,6 +73,7 @@ if (!isset($_SESSION["login"])) {
                 $customer_image = !empty($_FILES["customer_image"]["name"])
                     ? sha1_file($_FILES['customer_image']['tmp_name']) . "-" . str_replace(" ", "_", basename($_FILES["customer_image"]["name"])) : "";
                 $customer_image = strip_tags($customer_image);
+                $remove_photo = (isset($_POST['remove_photo']) && ($_POST['remove_photo'] == 1)) ? $_POST['remove_photo'] : "";
 
                 $flag = true;
 
@@ -184,13 +175,17 @@ if (!isset($_SESSION["login"])) {
                         mkdir($target_directory, 0777, true);
                     }
                 } else {
-                    $target_file = NULL;
+                    if ($remove_photo) {
+                        $target_file = NULL;
+                    } else {
+                        $target_file = $previousImage;
+                    }
                 }
 
                 if ($flag) {
                     $submitFlag = true;
 
-                    if (isset($_POST['remove_photo']) && $_POST['remove_photo'] == 1) {
+                    if ($remove_photo) {
                         if (file_exists($previousImage)) {
                             if (unlink($previousImage)) {
                                 //previousImage deleted successfully
@@ -262,136 +257,142 @@ if (!isset($_SESSION["login"])) {
         <!--we have our html form here where new record information can be updated-->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?ID={$ID}"); ?>" method="post"
             enctype="multipart/form-data">
-            <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <th>First Name</th>
-                    <td><input type='text' name='first_name' class='form-control'
-                            value="<?php echo htmlspecialchars($first_name, ENT_QUOTES); ?>" />
-                        <div class='text-danger'>
-                            <?php echo $first_nameEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Last Name</th>
-                    <td><input type='text' name='last_name' class='form-control'
-                            value="<?php echo htmlspecialchars($last_name, ENT_QUOTES); ?>" />
-                        <div class='text-danger'>
-                            <?php echo $last_nameEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Gender</th>
-                    <td>
-                        <div class="form-control">
-                            <input type="radio" id="female" name="gender" value="female" <?php echo (isset($gender) && $gender == "female") ? "checked" : ''; ?>>
-                            <label for="female">Female</label><br>
+            <div class='table-responsive table-mobile-responsive'>
+                <table class='table table-hover table-responsive table-bordered'>
+                    <tr>
+                        <th>First Name</th>
+                        <td><input type='text' name='first_name' class='form-control'
+                                value="<?php echo htmlspecialchars($first_name, ENT_QUOTES); ?>" />
+                            <div class='text-danger'>
+                                <?php echo $first_nameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Last Name</th>
+                        <td><input type='text' name='last_name' class='form-control'
+                                value="<?php echo htmlspecialchars($last_name, ENT_QUOTES); ?>" />
+                            <div class='text-danger'>
+                                <?php echo $last_nameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>
+                            <div class="form-control">
+                                <input type="radio" id="female" name="gender" value="female" <?php echo (isset($gender) && $gender == "female") ? "checked" : ''; ?>>
+                                <label for="female">Female</label><br>
 
-                            <input type="radio" id="male" name="gender" value="male" <?php echo (isset($gender) && $gender == "male") ? "checked" : ''; ?>>
-                            <label for="male">Male</label>
-                        </div>
-                        <div class='text-danger'>
-                            <?php echo $genderEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Date Of Birth</th>
-                    <td><input type='date' name='date_of_birth' class='form-control'
-                            value="<?php echo htmlspecialchars($date_of_birth, ENT_QUOTES); ?>" />
-                        <div class='text-danger'>
-                            <?php echo $date_of_birthEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Account Status</th>
-                    <td>
-                        <div class="form-control">
-                            <input type="radio" id="active" name="account_status" value="active" <?php echo (isset($account_status) && $account_status == "active") ? "checked" : ''; ?>>
-                            <label for="active">Active</label><br>
+                                <input type="radio" id="male" name="gender" value="male" <?php echo (isset($gender) && $gender == "male") ? "checked" : ''; ?>>
+                                <label for="male">Male</label>
+                            </div>
+                            <div class='text-danger'>
+                                <?php echo $genderEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date Of Birth</th>
+                        <td><input type='date' name='date_of_birth' class='form-control'
+                                value="<?php echo htmlspecialchars($date_of_birth, ENT_QUOTES); ?>" />
+                            <div class='text-danger'>
+                                <?php echo $date_of_birthEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Account Status</th>
+                        <td>
+                            <div class="form-control">
+                                <input type="radio" id="active" name="account_status" value="active" <?php echo (isset($account_status) && $account_status == "active") ? "checked" : ''; ?>>
+                                <label for="active">Active</label><br>
 
-                            <input type="radio" id="pending" name="account_status" value="pending" <?php echo (isset($account_status) && $account_status == "pending") ? "checked" : ''; ?>>
-                            <label for="pending">Pending</label><br>
+                                <input type="radio" id="pending" name="account_status" value="pending" <?php echo (isset($account_status) && $account_status == "pending") ? "checked" : ''; ?>>
+                                <label for="pending">Pending</label><br>
 
-                            <input type="radio" id="inactive" name="account_status" value="inactive" <?php echo (isset($account_status) && $account_status == "inactive") ? "checked" : ''; ?>>
-                            <label for="inactive">Inactive</label>
-                        </div>
-                        <div class='text-danger'>
-                            <?php echo $account_statusEr; ?>
-                        </div>
-                    </td>
-                </tr>
+                                <input type="radio" id="inactive" name="account_status" value="inactive" <?php echo (isset($account_status) && $account_status == "inactive") ? "checked" : ''; ?>>
+                                <label for="inactive">Inactive</label>
+                            </div>
+                            <div class='text-danger'>
+                                <?php echo $account_statusEr; ?>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <th colspan=2>
-                        <div class=optional>Change Password (Optional)</div>
-                    </th>
-                </tr>
-                <tr>
-                    <th>Old Password</th>
-                    <td><input type='password' name='old_password' class='form-control'
-                            value="<?php echo isset($old_password) ? $old_password : ''; ?>"></textarea>
-                        <div class='text-danger'>
-                            <?php echo $old_passwordEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>New Password</th>
-                    <td><input type='password' name='new_password' class='form-control'
-                            value="<?php echo isset($new_password) ? $new_password : ''; ?>"></textarea>
-                        <div class='text-danger'>
-                            <?php echo $new_passwordEr; ?>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Confirm New Password</th>
-                    <td><input type='password' name='confirm_password' class='form-control'></textarea>
-                        <div class='text-danger'>
-                            <?php echo $confirm_passwordEr; ?>
-                        </div>
-                    </td>
-                </tr>
+                    <tr>
+                        <th colspan=2>
+                            <div class=optional>Change Password (Optional)</div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Old Password</th>
+                        <td><input type='password' name='old_password' class='form-control'
+                                value="<?php echo isset($old_password) ? $old_password : ''; ?>"></textarea>
+                            <div class='text-danger'>
+                                <?php echo $old_passwordEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>New Password</th>
+                        <td><input type='password' name='new_password' class='form-control'
+                                value="<?php echo isset($new_password) ? $new_password : ''; ?>"></textarea>
+                            <div class='text-danger'>
+                                <?php echo $new_passwordEr; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Confirm New Password</th>
+                        <td><input type='password' name='confirm_password' class='form-control'></textarea>
+                            <div class='text-danger'>
+                                <?php echo $confirm_passwordEr; ?>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <th colspan=2>
-                        <div class=optional>Change Profile Picture (Optional)</div>
-                    </th>
-                </tr>
-                <tr>
-                    <th>Profile Picture</th>
+                    <tr>
+                        <th colspan=2>
+                            <div class=optional>Change Profile Picture (Optional)</div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Profile Picture</th>
 
-                    <td>
-                        <?php
-                        $imageSource = !empty($customer_image) ? $target_file : $previousImage;
+                        <td>
+                            <?php
+                            $imageSource = !empty($previousImage) ? $previousImage : (!empty($target_file) ? $target_file : '');
 
-                        if (!empty($previousImage) || !empty($customer_image)) {
-                            echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" /> Remove Photo</label>
+                            if (!empty($previousImage) || !empty($target_file)) {
+                                echo '<input type="checkbox" name="remove_photo" value="1" id="remove_photo" /> Remove Photo</label>
                         <br>';
-                        }
+                            }
 
-                        $image = (!empty($previousImage) || !empty($customer_image)) ? "<img src={$imageSource} width=100px height=100px/><br>" : '';
-                        echo $image;
-                        ?>
-                        <input type="file" name="customer_image" />
-                        <div class='text-danger'>
-                            <?php echo $file_upload_error_messages; ?>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                            $image = (!empty($previousImage) || !empty($target_file)) ? "<img src={$imageSource} class='img-thumbnail' width=100px height=100px/><br>" : '';
+                            echo $image;
+                            ?>
+                            <input type="file" name="customer_image" />
+                            <div class='text-danger'>
+                                <?php echo $file_upload_error_messages; ?>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
 
-            <div class="readOneBtn">
-                <input type='submit' value='Save Changes' class='btn btn-primary' />
-                <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a>
-            </div>
+                <div class="readOneBtn">
+                    <input type='submit' value='Save Changes' class='btn btn-primary' />
+                    <a href='customer_read.php' class='btn btn-danger'>Back to Customer Listing</a>
+                </div>
         </form>
+    </div>
 
     </div>
     <!-- end .container -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 
 </body>
 

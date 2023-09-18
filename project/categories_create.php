@@ -1,20 +1,8 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Product Category</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>Create Product Category</title>
 </head>
 
 <body>
@@ -39,6 +27,7 @@ if (!isset($_SESSION["login"])) {
 
                 $category_name = strip_tags($_POST['category_name']);
                 $category_description = strip_tags($_POST['category_description']);
+                $req_expiredDate = isset($_POST['req_expiredDate']) ? $_POST['req_expiredDate'] : NULL;
 
                 $flag = true;
                 if (empty($category_name)) {
@@ -52,14 +41,15 @@ if (!isset($_SESSION["login"])) {
                 }
 
                 if ($flag) {
-                    $query = "INSERT INTO product_categories SET category_name=:category_name, category_description=:category_description";
+                    $query = "INSERT INTO product_categories SET category_name=:category_name, category_description=:category_description, req_expiredDate=:req_expiredDate";
                     $stmt = $con->prepare($query);
                     $stmt->bindParam(':category_name', $category_name);
                     $stmt->bindParam(':category_description', $category_description);
+                    $stmt->bindParam(':req_expiredDate', $req_expiredDate);
 
                     if ($stmt->execute()) {
                         echo "<div class='alert alert-success'>Record was saved.</div>";
-                        $category_name = $category_description = '';
+                        $category_name = $category_description = $req_expiredDate = $_POST['req_expiredDate'] = '';
                     }
 
                 }
@@ -71,30 +61,35 @@ if (!isset($_SESSION["login"])) {
 
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <table class='table table-hover table-responsive table-bordered'>
-                <tr>
-                    <th>Category Name</th>
-                    <td><input type='text' name='category_name' class='form-control'
-                            value="<?php echo isset($category_name) ? $category_name : ''; ?>" />
-                        <div class='text-danger'>
-                            <?php echo $category_nameEr; ?>
-                        </div>
-                    </td>
-                </tr>
+            <div class='table-responsive table-mobile-responsive'>
+                <table class='table table-hover table-responsive table-bordered'>
+                    <tr>
+                        <th>Category Name</th>
+                        <td><input type='text' name='category_name' class='form-control'
+                                value="<?php echo isset($category_name) ? $category_name : ''; ?>" />
+                            <div class='text-danger'>
+                                <?php echo $category_nameEr; ?>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <th>Category Description</th>
-                    <td><textarea name='category_description'
-                            class='form-control'><?php echo isset($category_description) ? $category_description : ''; ?></textarea>
-                        <div class='text-danger'>
-                            <?php echo $category_descriptionEr; ?>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                    <tr>
+                        <th>Category Description</th>
+                        <td><textarea name='category_description'
+                                class='form-control'><?php echo isset($category_description) ? $category_description : ''; ?></textarea>
+                            <div class='text-danger'>
+                                <?php echo $category_descriptionEr; ?>
+                            </div>
+                            <?php $checked = (isset($_POST['req_expiredDate']) && $_POST['req_expiredDate'] == 'yes') ? 'checked' : ''; ?>
+                            <input type="checkbox" name="req_expiredDate" value="yes" id="req_expiredDate" <?php echo $checked ?> />
+                            Expired date is required</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <div class="readOneBtn">
                 <input type='submit' value='Save' class='btn btn-primary' />
-                <a href='product_create.php' class='btn btn-danger'>Create New Product</a>
+                <a href='categories_read.php' class='btn btn-danger'>Back to Category Listing</a>
             </div>
         </form>
 
@@ -103,6 +98,7 @@ if (!isset($_SESSION["login"])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
+
 </body>
 
 </html>

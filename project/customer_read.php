@@ -1,20 +1,8 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Customer Listing</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
@@ -22,7 +10,7 @@ if (!isset($_SESSION["login"])) {
     include 'navbar.php';
     ?>
     <!-- container -->
-    <div class="custom-container">
+    <div class="container">
         <div class="page-header">
             <h1>Customer Listing</h1>
         </div>
@@ -30,7 +18,7 @@ if (!isset($_SESSION["login"])) {
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a href='customer_create.php' class='btn btn-primary m-b-1em'>Create New Customer</a>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET" class="d-flex">
-                <input type="search" name="search"
+                <input type="search" name="search" class="searchField"
                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
                 <input type="submit" class='btn btn-warning' value="Search" />
             </form>
@@ -73,6 +61,7 @@ if (!isset($_SESSION["login"])) {
         if ($num > 0) {
 
             // data from database will be here
+            echo "<div class='table-responsive table-mobile-responsive'>";
             echo "<table class='table table-hover table-responsive table-bordered'>"; //start table
         
             //creating our table heading
@@ -80,10 +69,9 @@ if (!isset($_SESSION["login"])) {
             echo "<th>ID</th>";
             echo "<th>Username</th>";
             echo "<th>Email</th>";
-            //echo "<th>Password</th>";
-            echo "<th>Name</th>";
+            echo "<th class='d-none d-sm-table-cell'>Name</th>";
             echo "<th>Status</th>";
-            echo "<th>Registration Datetime</th>";
+            echo "<th class='d-none d-sm-table-cell'>Registration Datetime</th>";
             echo "<th>Action</th>";
             echo "</tr>";
 
@@ -99,18 +87,17 @@ if (!isset($_SESSION["login"])) {
                 echo "<tr>";
                 echo "<td>{$ID}</td>";
                 $imageSource = !empty($customer_image) ? $customer_image : 'http://localhost/web/project/img/default_profile_photo.jpg';
-                echo "<td>{$username}<br><img src={$imageSource} width=100px height=100px></td>"; //curly brace:substitute the values of the corresponding variables
-                echo "<td>{$email}</td>";
-                //echo "<td>{$password}</td>";
-                echo "<td>{$first_name} {$last_name}</td>";
+                echo "<td>{$username}<br><img src={$imageSource} class='img-thumbnail' width=100px height=100px></td>"; //curly brace:substitute the values of the corresponding variables
+                echo "<td class='break'>{$email}</td>";
+                echo "<td class='d-none d-sm-table-cell'>{$first_name} {$last_name}</td>";
                 echo "<td>{$account_status}</td>";
-                echo "<td>{$registration_date_time}</td>";
+                echo "<td class='d-none d-sm-table-cell'>{$registration_date_time}</td>";
                 echo "<td>";
                 // read one record
-                echo "<a href='customer_read_one.php?ID={$ID}' class='btn btn-info m-r-1em'>Read</a> ";
+                echo "<a href='customer_read_one.php?ID={$ID}' class='btn btn-info m-r-1em'>Read</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
+                echo "<a href='customer_update.php?ID={$ID}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_customer({$ID});'  class='btn btn-danger'>Delete</a>";
@@ -120,6 +107,7 @@ if (!isset($_SESSION["login"])) {
 
             // end table
             echo "</table>";
+            echo "</div>";
         }
         // if no records found
         else {
@@ -141,6 +129,10 @@ if (!isset($_SESSION["login"])) {
             }
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 
 </body>
 

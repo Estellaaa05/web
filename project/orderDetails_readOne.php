@@ -1,11 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION["login"])) {
-    $_SESSION["warning"] = "Please login to proceed.";
-    header("Location:login_form.php");
-    exit;
-}
-?>
 <!DOCTYPE HTML>
 <html>
 
@@ -15,11 +7,6 @@ if (!isset($_SESSION["login"])) {
     <title>Order Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <style>
-        .price {
-            text-align: right;
-        }
-    </style>
 </head>
 
 <body>
@@ -80,6 +67,7 @@ if (!isset($_SESSION["login"])) {
 
             if ($num > 0) {
 
+                echo "<div class='table-responsive table-mobile-responsive'>";
                 echo "<table class='table table-hover table-responsive table-bordered'><tr>";
                 echo "<th>Product ID</th>";
                 echo "<th>Product Name</th>";
@@ -92,7 +80,7 @@ if (!isset($_SESSION["login"])) {
 
                     echo "<tr><td>{$product_ID}</td>";
                     echo "<td>{$product_name}</td>";
-                    echo "<td>" . (($promotion_price > 0) ? "<del>{$price}</del> -> {$promotion_price}" : "{$price}") . "</td>";
+                    echo "<td>" . (($promotion_price > 0) ? "<del>{$price}</del> → {$promotion_price}" : "{$price}") . "</td>";
                     echo "<td> x {$quantity}</td>";
                     echo "<td><div class=price>{$subtotal_price}</td></div></tr>";
                 }
@@ -112,11 +100,12 @@ if (!isset($_SESSION["login"])) {
             </td>
         </tr>
         </table>
-        <div class="readOneBtn">
-            <a href='orderSummary_read.php' class='btn btn-info m-r-1em'>Back to Read Order</a>
-            <?php echo "<a href='order_update.php?order_ID={$order_ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
-            echo "<a href='#' onclick='delete_order({$order_ID});'  class='btn btn-danger'>Delete</a>"; ?>
-        </div>
+    </div>
+    <div class="readOneBtn">
+        <a href='orderSummary_read.php' class='btn btn-info m-r-1em'>Back to Read Order</a>
+        <?php echo "<a href='order_update.php?order_ID={$order_ID}' class='btn btn-primary m-r-1em'>Edit</a> ";
+        echo "<a href='#' onclick='delete_order({$order_ID});'  class='btn btn-danger'>Delete</a>"; ?>
+    </div>
     </div> <!-- end .container -->
 
     <script type='text/javascript'>
@@ -131,6 +120,10 @@ if (!isset($_SESSION["login"])) {
             }
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 
 </body>
 
