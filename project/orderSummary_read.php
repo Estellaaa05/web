@@ -41,7 +41,7 @@ if (!isset($_SESSION["login"])) {
         include 'config/database.php';
         $query = "SELECT order_ID, os.customer_ID, c.username, c.email, c.first_name, c.last_name, total_price, order_date FROM order_summary os 
         LEFT JOIN customers c ON os.customer_ID = c.ID 
-        ORDER BY order_ID ASC";
+        ORDER BY order_ID DESC";
 
         $action = isset($_GET['action']) ? $_GET['action'] : "";
         // if it was redirected from delete.php
@@ -57,7 +57,7 @@ if (!isset($_SESSION["login"])) {
             }
 
             $query = "SELECT order_ID, os.customer_ID, username, email, first_name, last_name, total_price, order_date FROM order_summary os 
-            LEFT JOIN customers c ON os.customer_ID = c.ID WHERE order_ID LIKE '%$search%' OR customer_ID LIKE '%$search%' OR username LIKE '%$search%' OR first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR CONCAT(first_name, ' ', last_name) LIKE '%$search%'  OR email LIKE '%$search%' ORDER BY order_ID ASC";
+            LEFT JOIN customers c ON os.customer_ID = c.ID WHERE order_ID LIKE '%$search%' OR customer_ID LIKE '%$search%' OR username LIKE '%$search%' OR first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR CONCAT(first_name, ' ', last_name) LIKE '%$search%'  OR email LIKE '%$search%' ORDER BY order_ID DESC";
         }
 
         $stmt = $con->prepare($query);

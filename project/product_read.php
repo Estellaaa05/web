@@ -40,7 +40,7 @@ if (!isset($_SESSION["login"])) {
         // include database connection
         include 'config/database.php';
         $query = "SELECT id, name, product_image, p.category_ID, c.category_name, price, promotion_price, product_image, created FROM products p
-        LEFT JOIN product_categories c ON p.category_ID = c.category_ID ORDER BY id ASC";
+        LEFT JOIN product_categories c ON p.category_ID = c.category_ID ORDER BY id DESC";
 
         $action = isset($_GET['action']) ? $_GET['action'] : "";
 
@@ -62,7 +62,7 @@ if (!isset($_SESSION["login"])) {
 
             $query = "SELECT id, name, product_image, p.category_ID, c.category_name, price, promotion_price, product_image, created FROM products p
             LEFT JOIN product_categories c ON p.category_ID = c.category_ID 
-            WHERE id LIKE '%$search%' OR name LIKE '%$search%' OR p.category_ID LIKE '%$search%' OR c.category_name LIKE '%$search%' ORDER BY id ASC";
+            WHERE id LIKE '%$search%' OR name LIKE '%$search%' OR p.category_ID LIKE '%$search%' OR c.category_name LIKE '%$search%' ORDER BY id DESC";
         }
 
         $stmt = $con->prepare($query);
