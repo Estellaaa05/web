@@ -21,7 +21,7 @@ if (isset($_SESSION["warning"])) {
     <head>
         <style>
             .container {
-                margin: 90px 55px;
+                padding: 90px 45px;
             }
 
             .loginBtn {
@@ -105,7 +105,7 @@ if (isset($_SESSION["warning"])) {
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username / Email:</label>
                                 <input type="text" class="form-control" id="usernameEmail" name='usernameEmail'
-                                    placeholder="Enter your Username or Email"
+                                    placeholder="Enter username or email"
                                     value="<?php echo isset($login_usernameEmail) ? $login_usernameEmail : ''; ?>">
                                 <div class='text-danger'>
                                     <?php echo $usernameEr; ?>
@@ -115,7 +115,7 @@ if (isset($_SESSION["warning"])) {
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password:</label>
                                 <input type="password" class="form-control" id="password" name='password'
-                                    placeholder="Enter your password">
+                                    placeholder="Enter password">
                                 <div class='text-danger'>
                                     <?php echo $passwordEr; ?>
                                 </div>
