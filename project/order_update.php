@@ -236,7 +236,7 @@
 
                     <tr>
                         <th>Total product</th>
-                        <td colspan=2>
+                        <td>
                             <input type='number' name='totalProduct' class='form-control'
                                 value="<?php echo isset($_POST["totalProduct"]) ? $_POST["totalProduct"] : $totalProduct; ?>" />
 
