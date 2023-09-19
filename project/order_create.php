@@ -175,7 +175,7 @@
                         $customer_ID = isset($_POST["customer_ID"]) ? $_POST["customer_ID"] : '';
                         ?>
                         <th>Customer</th>
-                        <td colspan=3>
+                        <td colspan=2>
                             <select class="form-select" name="customer_ID" id="customer_ID">
                                 <option value="">Select username</option>
                                 <?php
@@ -197,7 +197,7 @@
 
                     <tr>
                         <th>Total product</th>
-                        <td colspan=2>
+                        <td>
                             <input type='number' name='totalProduct' class='form-control'
                                 value="<?php echo isset($_POST["totalProduct"]) ? $_POST["totalProduct"] : 1; ?>" />
 
@@ -221,7 +221,7 @@
                             <th>Product
                                 <?php echo $i + 1 ?>
                             </th>
-                            <td>
+                            <td class="col-7">
                                 <select class="form-select" name="product_ID[]">
                                     <option value="">Select product</option>
                                     <?php
@@ -244,8 +244,7 @@
                                 </div>
                             </td>
 
-                            <th>Quantity</th>
-                            <td><input type='number' name='quantity[]' class='form-control'
+                            <td><input type='number' name='quantity[]' class='form-control' placeholder="Quantity"
                                     value="<?php echo isset($_POST["quantity"][$i]) ? $_POST["quantity"][$i] : ''; ?>" />
                                 <div class='text-danger'>
                                     <?php if (!empty($quantityEr) && isset($quantityEr[$i])) {

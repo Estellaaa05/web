@@ -18,7 +18,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a href='customer_create.php' class='btn btn-primary m-b-1em'>Create New Customer</a>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET" class="d-flex">
-                <input type="search" name="search" class="searchField"
+                <input type="search" name="search" class="form-control form-control-sm searchField"
                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
                 <input type="submit" class='btn btn-warning' value="Search" />
             </form>
@@ -88,7 +88,7 @@
                 echo "<td>{$ID}</td>";
                 $imageSource = !empty($customer_image) ? $customer_image : 'http://localhost/web/project/img/default_profile_photo.jpg';
                 echo "<td>{$username}<br><img src={$imageSource} class='img-thumbnail' width=100px height=100px></td>"; //curly brace:substitute the values of the corresponding variables
-                echo "<td class='break'>{$email}</td>";
+                echo "<td>{$email}</td>";
                 echo "<td class='d-none d-sm-table-cell'>{$first_name} {$last_name}</td>";
                 echo "<td>{$account_status}</td>";
                 echo "<td class='d-none d-sm-table-cell'>{$registration_date_time}</td>";

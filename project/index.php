@@ -96,7 +96,7 @@ if (isset($_SESSION["warning"])) {
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card shadow mb-5 bg-body rounded">
                         <div class="card-header card text-white bg-dark mb-3">
                             <h3 class="text-center">Login</h3>
                         </div>

@@ -22,7 +22,7 @@ if (!isset($_SESSION["login"])) {
     <style>
         .container {
             margin-bottom: 6%;
-            padding: 0 20px;
+            padding: 0 10px;
         }
 
         .navbar li a {
@@ -76,12 +76,17 @@ if (!isset($_SESSION["login"])) {
         }
 
         .btn-warning {
-            margin: 0 15px 0 5px;
+            margin: 0 0 0 5px;
         }
 
         .readOneBtn {
             text-align: center;
-            margin: 20px 0 40px 0;
+            margin: 20px 0 35px 0;
+        }
+
+        .readOneBtn btn,
+        .readOneBtn a {
+            margin: 2px;
         }
 
         .price {

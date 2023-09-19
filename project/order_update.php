@@ -261,7 +261,7 @@
                             <th>Product
                                 <?php echo $i + 1 ?>
                             </th>
-                            <td>
+                            <td class="col-7">
                                 <select class="form-select" name="product_ID[]">
                                     <option value="">Select product</option>
                                     <?php
@@ -283,9 +283,9 @@
                                     } ?>
                                 </div>
                             </td>
-                            <th>Quantity</th>
+
                             <td>
-                                <input type='number' name='quantity[]' class='form-control'
+                                <input type='number' name='quantity[]' class='form-control' placeholder="Quantity"
                                     value="<?php echo $currentQuantity; ?>" />
                                 <div class='text-danger'>
                                     <?php if (!empty($quantityEr) && isset($quantityEr[$i])) {

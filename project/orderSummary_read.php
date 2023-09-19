@@ -17,7 +17,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a href='order_create.php' class='btn btn-primary m-b-1em'>Create New Order</a>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET" class="d-flex">
-                <input type="search" name="search" class="searchField"
+                <input type="search" name="search" class="form-control form-control-sm searchField"
                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" />
                 <input type="submit" class='btn btn-warning' value="Search" />
             </form>
